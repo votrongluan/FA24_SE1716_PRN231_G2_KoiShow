@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\KoiShow.APIService\KoiShow.APIService.csproj" />
+    <ProjectReference Include="..\KoiShow.Common\KoiShow.Common.csproj" />
+    <ProjectReference Include="..\KoiShow.Data\KoiShow.Data.csproj" />
+  </ItemGroup>
+
+</Project>

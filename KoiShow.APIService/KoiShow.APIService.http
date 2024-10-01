@@ -1,0 +1,6 @@
+@KoiShow.APIService_HostAddress = http://localhost:5097
+
+GET {{KoiShow.APIService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -193,11 +193,6 @@ namespace KoiShow.MVCWebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("ContestResultId,ContestId,ContestResultName,ContestResultDescription,TotalScore,Rank,Comments,IsFinalized,IsPublished,Category,Status,Prize,PrizeDescription")] ContestResult contestResult)
         {
-            if (id != contestResult.Id)
-            {
-                return NotFound();
-            }
-
             bool saveStatus = false;
 
             if (ModelState.IsValid)
@@ -276,11 +271,6 @@ namespace KoiShow.MVCWebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             bool deleteStatus = false;
 
             if (ModelState.IsValid)
@@ -314,7 +304,7 @@ namespace KoiShow.MVCWebApp.Controllers
             }
             else
             {
-                return RedirectToAction();
+                return RedirectToAction(nameof(Delete));
             }
         }
     }

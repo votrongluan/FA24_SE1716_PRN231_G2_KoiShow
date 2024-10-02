@@ -101,7 +101,7 @@ namespace KoiShow.MVCWebApp.Controllers
         public async Task<IActionResult> Create()
         {
             var data = await this.GetContest();
-            ViewData["ContestId"] = new SelectList(await this.GetContest(), "ContestId", "CompetitionType");
+            ViewData["ContestId"] = new SelectList(await this.GetContest(), "Id", "ContestName");
             return View();
         }
 
@@ -145,7 +145,7 @@ namespace KoiShow.MVCWebApp.Controllers
             }
             else
             {
-                ViewData["ContestId"] = new SelectList(_context.Contests, "ContestId", "CompetitionType", contestResult.ContestId);
+                ViewData["ContestId"] = new SelectList(_context.Contests, "ContestId", "ContestName", contestResult.ContestId);
                 return View(contestResult);
             }
         }
@@ -182,7 +182,7 @@ namespace KoiShow.MVCWebApp.Controllers
                 return NotFound();
             }
 
-            ViewData["ContestId"] = new SelectList(await this.GetContest(), "ContestId", "CompetitionType", contestResult.ContestId);
+            ViewData["ContestId"] = new SelectList(await this.GetContest(), "Id", "ContestName", contestResult.ContestId);
             return View(contestResult);
         }
 
@@ -231,7 +231,7 @@ namespace KoiShow.MVCWebApp.Controllers
             }
             else
             {
-                ViewData["ContestId"] = new SelectList(_context.Contests, "ContestId", "CompetitionType", contestResult.ContestId);
+                ViewData["ContestId"] = new SelectList(_context.Contests, "ContestId", "ContestName", contestResult.ContestId);
                 return View(contestResult);
             }
         }

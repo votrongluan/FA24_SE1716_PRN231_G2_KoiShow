@@ -1,5 +1,6 @@
 ﻿using KoiShow.Data.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace KoiShow.Data.Base;
 
@@ -21,10 +22,26 @@ public class GenericRepository<T> where T : class
     {
         return _context.Set<T>().ToList();
     }
+
     public async Task<List<T>> GetAllAsync()
     {
         return await _context.Set<T>().ToListAsync();
     }
+
+    public List<T> GetAllWithInclude(params Expression<Func<T, object>>[] includes)
+    {
+        IQueryable<T> query = _context.Set<T>();
+        query = includes.Aggregate(query, (current, include) => current.Include(include));
+        return query.ToList();
+    }
+
+    public async Task<List<T>> GetAllWithIncludeAsync(params Expression<Func<T, object>>[] includes)
+    {
+        IQueryable<T> query = _context.Set<T>();
+        query = includes.Aggregate(query, (current, include) => current.Include(include));
+        return await query.ToListAsync();
+    }
+
     public void Create(T entity)
     {
         _context.Add(entity);
@@ -174,4 +191,82 @@ public class GenericRepository<T> where T : class
     }
 
     #endregion Separating asign entity and save operators
+
+    #region Range process method
+    public void CreateRange(IEnumerable<T> entities)
+    {
+        foreach (var entity in entities)
+        {
+            if (!_context.Set<T>().Local.Any(e => e == entity))
+            {
+                _context.Add(entity);
+            }
+            else
+            {
+                Update(entity);
+            }
+        }
+        _context.SaveChanges();
+    }
+
+    public async Task<int> CreateRangeAsync(IEnumerable<T> entities)
+    {
+        foreach (var entity in entities)
+        {
+            if (!_context.Set<T>().Local.Any(e => e == entity))
+            {
+                _context.Add(entity);
+            }
+            else
+            {
+                await UpdateAsync(entity);
+            }
+        }
+        return await _context.SaveChangesAsync();
+    }
+
+    public void UpdateRange(IEnumerable<T> entities)
+    {
+        foreach (var entity in entities)
+        {
+            if (_context.Set<T>().Local.Any(e => e == entity))
+            {
+                Update(entity);
+            }
+            else
+            {
+                Create(entity);
+            }
+        }
+        _context.SaveChanges();
+    }
+
+    public async Task<int> UpdateRangeAsync(IEnumerable<T> entities)
+    {
+        foreach (var entity in entities)
+        {
+            if (_context.Set<T>().Local.Any(e => e == entity))
+            {
+                await UpdateAsync(entity);
+            }
+            else
+            {
+                await CreateAsync(entity);
+            }
+        }
+        return await _context.SaveChangesAsync();
+    }
+
+    public void RemoveRange(IEnumerable<T> entities)
+    {
+        _context.RemoveRange(entities);
+        _context.SaveChanges();
+    }
+
+    public async Task<int> RemoveRangeAsync(IEnumerable<T> entities)
+    {
+        _context.RemoveRange(entities);
+        return await _context.SaveChangesAsync();
+    }
+    #endregion
 }

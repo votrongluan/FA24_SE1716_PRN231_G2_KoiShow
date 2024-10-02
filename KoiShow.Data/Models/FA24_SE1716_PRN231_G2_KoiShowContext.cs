@@ -126,17 +126,1063 @@ public class FA24_SE1716_PRN231_G2_KoiShowContext : DbContext
         });
 
         // Variety
+        modelBuilder.Entity<Variety>().HasData(new List<Variety>
+        {
+            new Variety
+            {
+                Id = 1,
+                Name = "Kohaku",
+                Description = "Cá Koi với các đốm màu đỏ trên nền trắng.",
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new Variety
+            {
+                Id = 2,
+                Name = "Taisho Sanke",
+                Description = "Cá Koi với các đốm đỏ và đen trên nền trắng.",
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new Variety
+            {
+                Id = 3,
+                Name = "Showa Sanshoku",
+                Description = "Cá Koi với các đốm đen và đỏ trên nền trắng, thường có màu đen trên đầu.",
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new Variety
+            {
+                Id = 4,
+                Name = "Shiro Utsuri",
+                Description = "Cá Koi đen với các đốm trắng xen kẽ.",
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new Variety
+            {
+                Id = 5,
+                Name = "Hi Utsuri",
+                Description = "Cá Koi đen với các đốm đỏ tươi.",
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new Variety
+            {
+                Id = 6,
+                Name = "Ki Utsuri",
+                Description = "Cá Koi đen với các đốm vàng.",
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new Variety
+            {
+                Id = 7,
+                Name = "Asagi",
+                Description = "Cá Koi với vảy màu xanh nhạt trên lưng và bụng màu đỏ.",
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new Variety
+            {
+                Id = 8,
+                Name = "Shusui",
+                Description = "Loại cá Koi da trơn với các vảy lớn chạy dọc theo lưng, có màu xanh nhạt và đỏ.",
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new Variety
+            {
+                Id = 9,
+                Name = "Bekko",
+                Description = "Cá Koi có màu trắng, đỏ hoặc vàng với các đốm đen.",
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            }
+        });
 
         // Animal
+        modelBuilder.Entity<Animal>().HasData(new List<Animal>
+        { new Animal
+            {
+                Id = 1,
+                AnimalName = "Koi Kohaku 01",
+                VarietyId = 1,
+                Size = 30,
+                BirthDate = new DateTime(2020, 5, 10),
+                ImgLink = "https://example.com/koi_kohaku_01.jpg",
+                OwnerId = 1,
+                Weight = 3,
+                Description = "Cá Koi Kohaku với màu đỏ trắng đẹp mắt.",
+                HeathStatus = "Healthy",
+                Gender = 1,
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new Animal
+            {
+                Id = 2,
+                AnimalName = "Koi Sanke 01",
+                VarietyId = 2,
+                Size = 35,
+                BirthDate = new DateTime(2019, 7, 15),
+                ImgLink = "https://example.com/koi_sanke_01.jpg",
+                OwnerId = 2,
+                Weight = 4,
+                Description = "Cá Koi Sanke với đốm đen và đỏ trên nền trắng.",
+                HeathStatus = "Healthy",
+                Gender = 2,
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new Animal
+            {
+                Id = 3,
+                AnimalName = "Koi Showa 01",
+                VarietyId = 3,
+                Size = 32,
+                BirthDate = new DateTime(2021, 2, 25),
+                ImgLink = "https://example.com/koi_showa_01.jpg",
+                OwnerId = 3,
+                Weight = 3,
+                Description = "Cá Koi Showa với các đốm đen đỏ nổi bật.",
+                HeathStatus = "Sick",
+                Gender = 1,
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new Animal
+            {
+                Id = 4,
+                AnimalName = "Koi Shiro Utsuri 01",
+                VarietyId = 4,
+                Size = 40,
+                BirthDate = new DateTime(2020, 10, 5),
+                ImgLink = "https://example.com/koi_shiro_01.jpg",
+                OwnerId = 1,
+                Weight = 5,
+                Description = "Cá Koi Shiro Utsuri với màu đen trắng.",
+                HeathStatus = "Healthy",
+                Gender = 2,
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new Animal
+            {
+                Id = 5,
+                AnimalName = "Koi Hi Utsuri 01",
+                VarietyId = 5,
+                Size = 37,
+                BirthDate = new DateTime(2018, 8, 12),
+                ImgLink = "https://example.com/koi_hi_utsuri_01.jpg",
+                OwnerId = 2,
+                Weight = 4,
+                Description = "Cá Koi Hi Utsuri với đốm đỏ tươi trên nền đen.",
+                HeathStatus = "Healthy",
+                Gender = 1,
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new Animal
+            {
+                Id = 6,
+                AnimalName = "Koi Ki Utsuri 01",
+                VarietyId = 6,
+                Size = 42,
+                BirthDate = new DateTime(2019, 4, 30),
+                ImgLink = "https://example.com/koi_ki_utsuri_01.jpg",
+                OwnerId = 3,
+                Weight = 6,
+                Description = "Cá Koi Ki Utsuri với đốm vàng trên nền đen.",
+                HeathStatus = "Sick",
+                Gender = 2,
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new Animal
+            {
+                Id = 7,
+                AnimalName = "Koi Asagi 01",
+                VarietyId = 7,
+                Size = 38,
+                BirthDate = new DateTime(2021, 3, 22),
+                ImgLink = "https://example.com/koi_asagi_01.jpg",
+                OwnerId = 1,
+                Weight = 3,
+                Description = "Cá Koi Asagi với màu xanh và đỏ nhạt.",
+                HeathStatus = "Healthy",
+                Gender = 1,
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new Animal
+            {
+                Id = 8,
+                AnimalName = "Koi Shusui 01",
+                VarietyId = 8,
+                Size = 36,
+                BirthDate = new DateTime(2020, 12, 18),
+                ImgLink = "https://example.com/koi_shusui_01.jpg",
+                OwnerId = 2,
+                Weight = 4,
+                Description = "Cá Koi Shusui với các vảy lớn và màu sắc đẹp.",
+                HeathStatus = "Healthy",
+                Gender = 2,
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new Animal
+            {
+                Id = 9,
+                AnimalName = "Koi Bekko 01",
+                VarietyId = 9,
+                Size = 34,
+                BirthDate = new DateTime(2019, 9, 29),
+                ImgLink = "https://example.com/koi_bekko_01.jpg",
+                OwnerId = 3,
+                Weight = 4,
+                Description = "Cá Koi Bekko với các đốm đen trên nền trắng.",
+                HeathStatus = "Sick",
+                Gender = 1,
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            }
+        });
 
         // Contest
+        modelBuilder.Entity<Contest>().HasData(new List<Contest>
+        { 
+            new Contest
+            {
+                Id = 1,
+                ContestName = "Koi Beauty Contest",
+                Title = "Cuộc thi sắc đẹp cá Koi",
+                Description = "Thi đấu để chọn ra những chú cá Koi đẹp nhất về màu sắc và hình dáng.",
+                StartDate = new DateTime(2024, 11, 1),
+                EndDate = new DateTime(2024, 11, 5),
+                Location = "Hồ Chí Minh",
+                CompetitionType = "Beauty",
+                Status = 1,
+                Participants = 50,
+                Image = "https://example.com/koi_beauty_contest.jpg",
+                ContactInfo = "info@koicontest.com",
+                ShapePointPercent = 40,
+                ColorPointPercent = 35,
+                PatternPointPercent = 25,
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new Contest
+            {
+                Id = 2,
+                ContestName = "Koi Performance Contest",
+                Title = "Cuộc thi trình diễn cá Koi",
+                Description = "Cuộc thi các màn trình diễn cá Koi độc đáo.",
+                StartDate = new DateTime(2024, 12, 1),
+                EndDate = new DateTime(2024, 12, 3),
+                Location = "Hà Nội",
+                CompetitionType = "Performance",
+                Status = 1,
+                Participants = 40,
+                Image = "https://example.com/koi_performance_contest.jpg",
+                ContactInfo = "contact@koicontest.com",
+                ShapePointPercent = 30,
+                ColorPointPercent = 40,
+                PatternPointPercent = 30,
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new Contest
+            {
+                Id = 3,
+                ContestName = "International Koi Show",
+                Title = "Triển lãm cá Koi quốc tế",
+                Description = "Sự kiện triển lãm cá Koi quốc tế với nhiều loại cá đẹp từ các quốc gia.",
+                StartDate = new DateTime(2025, 1, 15),
+                EndDate = new DateTime(2025, 1, 18),
+                Location = "Đà Nẵng",
+                CompetitionType = "Exhibition",
+                Status = 1,
+                Participants = 100,
+                Image = "https://example.com/international_koi_show.jpg",
+                ContactInfo = "support@koicontest.com",
+                ShapePointPercent = 35,
+                ColorPointPercent = 35,
+                PatternPointPercent = 30,
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new Contest
+            {
+                Id = 4,
+                ContestName = "Koi Breeding Contest",
+                Title = "Cuộc thi sinh sản cá Koi",
+                Description = "Cuộc thi chọn ra những giống cá Koi khỏe mạnh nhất.",
+                StartDate = new DateTime(2025, 2, 20),
+                EndDate = new DateTime(2025, 2, 22),
+                Location = "Hồ Chí Minh",
+                CompetitionType = "Breeding",
+                Status = 1,
+                Participants = 30,
+                Image = "https://example.com/koi_breeding_contest.jpg",
+                ContactInfo = "breeding@koicontest.com",
+                ShapePointPercent = 25,
+                ColorPointPercent = 45,
+                PatternPointPercent = 30,
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new Contest
+            {
+                Id = 5,
+                ContestName = "Koi Swimming Contest",
+                Title = "Cuộc thi bơi lội cá Koi",
+                Description = "Cuộc thi tốc độ bơi lội của các giống cá Koi.",
+                StartDate = new DateTime(2025, 3, 10),
+                EndDate = new DateTime(2025, 3, 12),
+                Location = "Hải Phòng",
+                CompetitionType = "Speed",
+                Status = 1,
+                Participants = 25,
+                Image = "https://example.com/koi_swimming_contest.jpg",
+                ContactInfo = "swim@koicontest.com",
+                ShapePointPercent = 20,
+                ColorPointPercent = 50,
+                PatternPointPercent = 30,
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new Contest
+            {
+                Id = 6,
+                ContestName = "National Koi Competition",
+                Title = "Cuộc thi cá Koi toàn quốc",
+                Description = "Cuộc thi cá Koi lớn nhất toàn quốc.",
+                StartDate = new DateTime(2025, 4, 5),
+                EndDate = new DateTime(2025, 4, 7),
+                Location = "Huế",
+                CompetitionType = "National",
+                Status = 1,
+                Participants = 80,
+                Image = "https://example.com/national_koi_competition.jpg",
+                ContactInfo = "national@koicontest.com",
+                ShapePointPercent = 30,
+                ColorPointPercent = 40,
+                PatternPointPercent = 30,
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new Contest
+            {
+                Id = 7,
+                ContestName = "Regional Koi Championship",
+                Title = "Giải vô địch cá Koi khu vực",
+                Description = "Giải vô địch cá Koi với sự tham gia của các giống cá Koi nổi tiếng.",
+                StartDate = new DateTime(2025, 5, 15),
+                EndDate = new DateTime(2025, 5, 17),
+                Location = "Nha Trang",
+                CompetitionType = "Regional",
+                Status = 1,
+                Participants = 60,
+                Image = "https://example.com/regional_koi_championship.jpg",
+                ContactInfo = "regional@koicontest.com",
+                ShapePointPercent = 35,
+                ColorPointPercent = 35,
+                PatternPointPercent = 30,
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new Contest
+            {
+                Id = 8,
+                ContestName = "Koi Art Exhibition",
+                Title = "Triển lãm nghệ thuật cá Koi",
+                Description = "Triển lãm nghệ thuật về cá Koi, tập trung vào vẻ đẹp tự nhiên của loài cá này.",
+                StartDate = new DateTime(2025, 6, 20),
+                EndDate = new DateTime(2025, 6, 22),
+                Location = "Đà Lạt",
+                CompetitionType = "Art",
+                Status = 1,
+                Participants = 70,
+                Image = "https://example.com/koi_art_exhibition.jpg",
+                ContactInfo = "art@koicontest.com",
+                ShapePointPercent = 40,
+                ColorPointPercent = 30,
+                PatternPointPercent = 30,
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new Contest
+            {
+                Id = 9,
+                ContestName = "Koi Innovation Contest",
+                Title = "Cuộc thi sáng tạo cá Koi",
+                Description = "Cuộc thi sáng tạo mới về kỹ thuật chăm sóc và lai tạo cá Koi.",
+                StartDate = new DateTime(2025, 7, 10),
+                EndDate = new DateTime(2025, 7, 12),
+                Location = "Vũng Tàu",
+                CompetitionType = "Innovation",
+                Status = 1,
+                Participants = 55,
+                Image = "https://example.com/koi_innovation_contest.jpg",
+                ContactInfo = "innovation@koicontest.com",
+                ShapePointPercent = 30,
+                ColorPointPercent = 40,
+                PatternPointPercent = 30,
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            }
+        });
 
         // Register Form
+        modelBuilder.Entity<RegisterForm>().HasData(new List<RegisterForm>
+        {
+            new RegisterForm
+            {
+                Id = 1,
+                ContestId = 1,
+                AnimalId = 1,
+                EntryTitle = "Koi Sắc Màu Đỏ",
+                CheckinStatus = "Checked In",
+                RegistrationDate = new DateTime(2024, 11, 1),
+                ApprovalStatus = "Approved",
+                Notes = "Cá khỏe mạnh, nổi bật với màu sắc đỏ rực.",
+                Status = "Active",
+                Image = "https://example.com/koi_red.jpg",
+                HealthStatus = "Good",
+                Color = "Red",
+                Shape = "Round",
+                Pattern = "Solid",
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new RegisterForm
+            {
+                Id = 2,
+                ContestId = 1,
+                AnimalId = 2,
+                EntryTitle = "Koi Trắng Đen",
+                CheckinStatus = "Checked In",
+                RegistrationDate = new DateTime(2024, 11, 1),
+                ApprovalStatus = "Pending",
+                Notes = "Cá có màu sắc hài hòa giữa trắng và đen.",
+                Status = "Active",
+                Image = "https://example.com/koi_black_white.jpg",
+                HealthStatus = "Fair",
+                Color = "Black and White",
+                Shape = "Long",
+                Pattern = "Mixed",
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new RegisterForm
+            {
+                Id = 3,
+                ContestId = 2,
+                AnimalId = 3,
+                EntryTitle = "Koi Vàng Óng",
+                CheckinStatus = "Checked In",
+                RegistrationDate = new DateTime(2024, 12, 1),
+                ApprovalStatus = "Approved",
+                Notes = "Màu vàng óng ánh, thân hình cân đối.",
+                Status = "Active",
+                Image = "https://example.com/koi_yellow.jpg",
+                HealthStatus = "Excellent",
+                Color = "Yellow",
+                Shape = "Slim",
+                Pattern = "Solid",
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new RegisterForm
+            {
+                Id = 4,
+                ContestId = 2,
+                AnimalId = 4,
+                EntryTitle = "Koi Cam Nổi Bật",
+                CheckinStatus = "Pending",
+                RegistrationDate = new DateTime(2024, 12, 1),
+                ApprovalStatus = "Pending",
+                Notes = "Cá Koi cam rực rỡ, độc đáo.",
+                Status = "Pending",
+                Image = "https://example.com/koi_orange.jpg",
+                HealthStatus = "Good",
+                Color = "Orange",
+                Shape = "Short",
+                Pattern = "Mixed",
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new RegisterForm
+            {
+                Id = 5,
+                ContestId = 3,
+                AnimalId = 5,
+                EntryTitle = "Koi Đen Bóng",
+                CheckinStatus = "Checked In",
+                RegistrationDate = new DateTime(2025, 1, 15),
+                ApprovalStatus = "Approved",
+                Notes = "Cá Koi với màu đen bóng khỏe mạnh.",
+                Status = "Active",
+                Image = "https://example.com/koi_black.jpg",
+                HealthStatus = "Excellent",
+                Color = "Black",
+                Shape = "Round",
+                Pattern = "Solid",
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new RegisterForm
+            {
+                Id = 6,
+                ContestId = 3,
+                AnimalId = 6,
+                EntryTitle = "Koi Xanh Biển",
+                CheckinStatus = "Checked In",
+                RegistrationDate = new DateTime(2025, 1, 15),
+                ApprovalStatus = "Approved",
+                Notes = "Cá Koi có màu xanh biển đậm.",
+                Status = "Active",
+                Image = "https://example.com/koi_blue.jpg",
+                HealthStatus = "Fair",
+                Color = "Blue",
+                Shape = "Slim",
+                Pattern = "Mixed",
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new RegisterForm
+            {
+                Id = 7,
+                ContestId = 4,
+                AnimalId = 7,
+                EntryTitle = "Koi Xám Khói",
+                CheckinStatus = "Pending",
+                RegistrationDate = new DateTime(2025, 2, 20),
+                ApprovalStatus = "Pending",
+                Notes = "Màu xám khói độc đáo, cá có sức sống tốt.",
+                Status = "Pending",
+                Image = "https://example.com/koi_gray.jpg",
+                HealthStatus = "Good",
+                Color = "Gray",
+                Shape = "Long",
+                Pattern = "Solid",
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new RegisterForm
+            {
+                Id = 8,
+                ContestId = 4,
+                AnimalId = 8,
+                EntryTitle = "Koi Hồng Nhẹ Nhàng",
+                CheckinStatus = "Checked In",
+                RegistrationDate = new DateTime(2025, 2, 20),
+                ApprovalStatus = "Approved",
+                Notes = "Cá Koi màu hồng phớt nhẹ nhàng.",
+                Status = "Active",
+                Image = "https://example.com/koi_pink.jpg",
+                HealthStatus = "Excellent",
+                Color = "Pink",
+                Shape = "Short",
+                Pattern = "Mixed",
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new RegisterForm
+            {
+                Id = 9,
+                ContestId = 5,
+                AnimalId = 9,
+                EntryTitle = "Koi Tím Thủy Chung",
+                CheckinStatus = "Checked In",
+                RegistrationDate = new DateTime(2025, 3, 10),
+                ApprovalStatus = "Approved",
+                Notes = "Màu tím độc đáo, thân hình cân đối.",
+                Status = "Active",
+                Image = "https://example.com/koi_purple.jpg",
+                HealthStatus = "Fair",
+                Color = "Purple",
+                Shape = "Round",
+                Pattern = "Solid",
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            }
+        });
 
         // Point
+        modelBuilder.Entity<Point>().HasData(new List<Point>
+        {
+            new Point
+            {
+                Id = 1,
+                ShapePoint = 85,
+                ColorPoint = 90,
+                PatternPoint = 88,
+                Comment = "Hình dáng cân đối, màu sắc nổi bật.",
+                JuryId = 1,
+                RegisterFormId = 1,
+                PointStatus = 1,
+                JudgeRank = "Expert",
+                Penalties = 0,
+                TotalScore = 263,
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new Point
+            {
+                Id = 2,
+                ShapePoint = 80,
+                ColorPoint = 85,
+                PatternPoint = 82,
+                Comment = "Hình dáng ổn định, màu sắc hài hòa.",
+                JuryId = 2,
+                RegisterFormId = 2,
+                PointStatus = 1,
+                JudgeRank = "Intermediate",
+                Penalties = 1,
+                TotalScore = 246,
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new Point
+            {
+                Id = 3,
+                ShapePoint = 92,
+                ColorPoint = 95,
+                PatternPoint = 94,
+                Comment = "Xuất sắc trong mọi khía cạnh.",
+                JuryId = 3,
+                RegisterFormId = 3,
+                PointStatus = 1,
+                JudgeRank = "Master",
+                Penalties = 0,
+                TotalScore = 281,
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new Point
+            {
+                Id = 4,
+                ShapePoint = 70,
+                ColorPoint = 75,
+                PatternPoint = 78,
+                Comment = "Hình dáng tốt nhưng màu sắc cần cải thiện.",
+                JuryId = 4,
+                RegisterFormId = 4,
+                PointStatus = 1,
+                JudgeRank = "Novice",
+                Penalties = 2,
+                TotalScore = 221,
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new Point
+            {
+                Id = 5,
+                ShapePoint = 88,
+                ColorPoint = 90,
+                PatternPoint = 85,
+                Comment = "Hình dáng và màu sắc đẹp, có vài khuyết điểm nhỏ.",
+                JuryId = 1,
+                RegisterFormId = 5,
+                PointStatus = 1,
+                JudgeRank = "Expert",
+                Penalties = 0,
+                TotalScore = 263,
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new Point
+            {
+                Id = 6,
+                ShapePoint = 83,
+                ColorPoint = 88,
+                PatternPoint = 86,
+                Comment = "Màu sắc đẹp nhưng hình dáng còn chưa đồng đều.",
+                JuryId = 2,
+                RegisterFormId = 6,
+                PointStatus = 1,
+                JudgeRank = "Intermediate",
+                Penalties = 1,
+                TotalScore = 257,
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new Point
+            {
+                Id = 7,
+                ShapePoint = 95,
+                ColorPoint = 97,
+                PatternPoint = 96,
+                Comment = "Hoàn hảo trong tất cả các yếu tố.",
+                JuryId = 3,
+                RegisterFormId = 7,
+                PointStatus = 1,
+                JudgeRank = "Master",
+                Penalties = 0,
+                TotalScore = 288,
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new Point
+            {
+                Id = 8,
+                ShapePoint = 75,
+                ColorPoint = 80,
+                PatternPoint = 82,
+                Comment = "Hình dáng và màu sắc trung bình, cần cải thiện.",
+                JuryId = 4,
+                RegisterFormId = 8,
+                PointStatus = 1,
+                JudgeRank = "Novice",
+                Penalties = 3,
+                TotalScore = 234,
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new Point
+            {
+                Id = 9,
+                ShapePoint = 90,
+                ColorPoint = 92,
+                PatternPoint = 91,
+                Comment = "Rất tốt, hình dáng và màu sắc gần như hoàn hảo.",
+                JuryId = 1,
+                RegisterFormId = 9,
+                PointStatus = 1,
+                JudgeRank = "Expert",
+                Penalties = 0,
+                TotalScore = 273,
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            }
+        });
 
         // Contest Result
+        modelBuilder.Entity<ContestResult>().HasData(new List<ContestResult>
+        {
+            new ContestResult
+            {
+                Id = 1,
+                ContestId = 1,
+                ContestResultName = "Kết quả cuộc thi Koi Đẹp Nhất",
+                ContestResultDescription = "Giải nhất cho Koi có màu sắc và hình dáng xuất sắc.",
+                TotalScore = 290.5,
+                Rank = 1,
+                Comments = "Hình dáng hoàn hảo, màu sắc rực rỡ.",
+                IsFinalized = "Yes",
+                IsPublished = "Yes",
+                Category = "Màu sắc",
+                Status = "Final",
+                Prize = 1000,
+                PrizeDescription = "Cúp vàng và 1000 USD",
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new ContestResult
+            {
+                Id = 2,
+                ContestId = 1,
+                ContestResultName = "Kết quả cuộc thi Koi Cân Đối Nhất",
+                ContestResultDescription = "Giải nhì cho Koi có hình dáng cân đối.",
+                TotalScore = 275.0,
+                Rank = 2,
+                Comments = "Hình dáng tốt nhưng cần cải thiện về màu sắc.",
+                IsFinalized = "Yes",
+                IsPublished = "Yes",
+                Category = "Hình dáng",
+                Status = "Final",
+                Prize = 500,
+                PrizeDescription = "Cúp bạc và 500 USD",
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new ContestResult
+            {
+                Id = 3,
+                ContestId = 2,
+                ContestResultName = "Kết quả cuộc thi Koi Sáng Tạo",
+                ContestResultDescription = "Giải nhất cho Koi có sự kết hợp màu sắc độc đáo.",
+                TotalScore = 288.0,
+                Rank = 1,
+                Comments = "Koi có sự sáng tạo tuyệt vời về họa tiết và màu sắc.",
+                IsFinalized = "Yes",
+                IsPublished = "Yes",
+                Category = "Sáng tạo",
+                Status = "Final",
+                Prize = 1200,
+                PrizeDescription = "Cúp vàng và 1200 USD",
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new ContestResult
+            {
+                Id = 4,
+                ContestId = 2,
+                ContestResultName = "Kết quả cuộc thi Koi Độc Đáo",
+                ContestResultDescription = "Giải nhì cho Koi có họa tiết độc đáo.",
+                TotalScore = 270.0,
+                Rank = 2,
+                Comments = "Họa tiết ấn tượng nhưng cần cải thiện về màu sắc.",
+                IsFinalized = "Yes",
+                IsPublished = "No",
+                Category = "Họa tiết",
+                Status = "Pending",
+                Prize = 600,
+                PrizeDescription = "Cúp bạc và 600 USD",
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new ContestResult
+            {
+                Id = 5,
+                ContestId = 3,
+                ContestResultName = "Kết quả cuộc thi Koi Nhỏ Đẹp Nhất",
+                ContestResultDescription = "Giải nhất cho Koi nhỏ có hình dáng và màu sắc hoàn hảo.",
+                TotalScore = 295.5,
+                Rank = 1,
+                Comments = "Koi nhỏ nhưng rất hoàn thiện về mọi mặt.",
+                IsFinalized = "Yes",
+                IsPublished = "Yes",
+                Category = "Koi nhỏ",
+                Status = "Final",
+                Prize = 1500,
+                PrizeDescription = "Cúp vàng và 1500 USD",
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new ContestResult
+            {
+                Id = 6,
+                ContestId = 3,
+                ContestResultName = "Kết quả cuộc thi Koi Độc Lạ",
+                ContestResultDescription = "Giải nhì cho Koi có đặc điểm khác biệt.",
+                TotalScore = 282.0,
+                Rank = 2,
+                Comments = "Có nhiều đặc điểm độc đáo nhưng màu sắc chưa đồng đều.",
+                IsFinalized = "Yes",
+                IsPublished = "No",
+                Category = "Độc lạ",
+                Status = "Pending",
+                Prize = 800,
+                PrizeDescription = "Cúp bạc và 800 USD",
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new ContestResult
+            {
+                Id = 7,
+                ContestId = 4,
+                ContestResultName = "Kết quả cuộc thi Koi Hoàn Hảo",
+                ContestResultDescription = "Giải nhất cho Koi hoàn thiện về cả màu sắc và hình dáng.",
+                TotalScore = 299.0,
+                Rank = 1,
+                Comments = "Koi gần như hoàn hảo, không có khuyết điểm nào đáng kể.",
+                IsFinalized = "Yes",
+                IsPublished = "Yes",
+                Category = "Hoàn hảo",
+                Status = "Final",
+                Prize = 2000,
+                PrizeDescription = "Cúp vàng và 2000 USD",
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new ContestResult
+            {
+                Id = 8,
+                ContestId = 4,
+                ContestResultName = "Kết quả cuộc thi Koi Màu Sắc Tốt",
+                ContestResultDescription = "Giải nhì cho Koi có màu sắc đồng đều.",
+                TotalScore = 285.5,
+                Rank = 2,
+                Comments = "Màu sắc đồng đều nhưng hình dáng chưa hoàn thiện.",
+                IsFinalized = "Yes",
+                IsPublished = "No",
+                Category = "Màu sắc",
+                Status = "Pending",
+                Prize = 1000,
+                PrizeDescription = "Cúp bạc và 1000 USD",
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new ContestResult
+            {
+                Id = 9,
+                ContestId = 5,
+                ContestResultName = "Kết quả cuộc thi Koi Cân Đối Nhất",
+                ContestResultDescription = "Giải nhất cho Koi cân đối về hình dáng.",
+                TotalScore = 293.0,
+                Rank = 1,
+                Comments = "Hình dáng hoàn hảo, nhưng cần cải thiện họa tiết.",
+                IsFinalized = "Yes",
+                IsPublished = "Yes",
+                Category = "Cân đối",
+                Status = "Final",
+                Prize = 1700,
+                PrizeDescription = "Cúp vàng và 1700 USD",
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            }
+        });
 
         // Payment
+        modelBuilder.Entity<Payment>().HasData(new List<Payment>
+        {
+            new Payment
+            {
+                Id = 1,
+                RegisterFormId = 1,
+                TransactionId = "TXN123456789",
+                PaymentAmount = 100.50,
+                PaymentDate = DateTime.Now.AddDays(-10),
+                PaymentStatus = "Completed",
+                Description = "Payment for registration form 1",
+                Vatrate = 0.1, // 10% VAT
+                ActualCost = 90.45,
+                DiscountAmount = 10.05,
+                FinalAmount = 100.50,
+                Currency = "USD",
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new Payment
+            {
+                Id = 2,
+                RegisterFormId = 2,
+                TransactionId = "TXN123456790",
+                PaymentAmount = 150.75,
+                PaymentDate = DateTime.Now.AddDays(-8),
+                PaymentStatus = "Pending",
+                Description = "Payment for registration form 2",
+                Vatrate = 0.08, // 8% VAT
+                ActualCost = 138.69,
+                DiscountAmount = 12.06,
+                FinalAmount = 150.75,
+                Currency = "USD",
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new Payment
+            {
+                Id = 3,
+                RegisterFormId = 3,
+                TransactionId = "TXN123456791",
+                PaymentAmount = 200.00,
+                PaymentDate = DateTime.Now.AddDays(-6),
+                PaymentStatus = "Completed",
+                Description = "Payment for registration form 3",
+                Vatrate = 0.05, // 5% VAT
+                ActualCost = 190.00,
+                DiscountAmount = 10.00,
+                FinalAmount = 200.00,
+                Currency = "USD",
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new Payment
+            {
+                Id = 4,
+                RegisterFormId = 4,
+                TransactionId = "TXN123456792",
+                PaymentAmount = 250.25,
+                PaymentDate = DateTime.Now.AddDays(-4),
+                PaymentStatus = "Failed",
+                Description = "Payment for registration form 4",
+                Vatrate = 0.07, // 7% VAT
+                ActualCost = 232.73,
+                DiscountAmount = 17.52,
+                FinalAmount = 250.25,
+                Currency = "USD",
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new Payment
+            {
+                Id = 5,
+                RegisterFormId = 5,
+                TransactionId = "TXN123456793",
+                PaymentAmount = 300.75,
+                PaymentDate = DateTime.Now.AddDays(-2),
+                PaymentStatus = "Completed",
+                Description = "Payment for registration form 5",
+                Vatrate = 0.12, // 12% VAT
+                ActualCost = 264.66,
+                DiscountAmount = 36.09,
+                FinalAmount = 300.75,
+                Currency = "USD",
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new Payment
+            {
+                Id = 6,
+                RegisterFormId = 6,
+                TransactionId = "TXN123456794",
+                PaymentAmount = 350.00,
+                PaymentDate = DateTime.Now.AddDays(-1),
+                PaymentStatus = "Pending",
+                Description = "Payment for registration form 6",
+                Vatrate = 0.1, // 10% VAT
+                ActualCost = 315.00,
+                DiscountAmount = 35.00,
+                FinalAmount = 350.00,
+                Currency = "USD",
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new Payment
+            {
+                Id = 7,
+                RegisterFormId = 7,
+                TransactionId = "TXN123456795",
+                PaymentAmount = 400.00,
+                PaymentDate = DateTime.Now,
+                PaymentStatus = "Completed",
+                Description = "Payment for registration form 7",
+                Vatrate = 0.15, // 15% VAT
+                ActualCost = 340.00,
+                DiscountAmount = 60.00,
+                FinalAmount = 400.00,
+                Currency = "USD",
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new Payment
+            {
+                Id = 8,
+                RegisterFormId = 8,
+                TransactionId = "TXN123456796",
+                PaymentAmount = 450.50,
+                PaymentDate = DateTime.Now,
+                PaymentStatus = "Failed",
+                Description = "Payment for registration form 8",
+                Vatrate = 0.09, // 9% VAT
+                ActualCost = 409.96,
+                DiscountAmount = 40.54,
+                FinalAmount = 450.50,
+                Currency = "USD",
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            },
+            new Payment
+            {
+                Id = 9,
+                RegisterFormId = 9,
+                TransactionId = "TXN123456797",
+                PaymentAmount = 500.00,
+                PaymentDate = DateTime.Now,
+                PaymentStatus = "Completed",
+                Description = "Payment for registration form 9",
+                Vatrate = 0.2, // 20% VAT
+                ActualCost = 400.00,
+                DiscountAmount = 100.00,
+                FinalAmount = 500.00,
+                Currency = "USD",
+                CreatedTime = DateTime.Now,
+                LastUpdatedTime = DateTime.Now
+            }
+        });
     }
 }

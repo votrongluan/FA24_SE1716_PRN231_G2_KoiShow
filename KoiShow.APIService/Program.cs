@@ -9,6 +9,21 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(
+        name: MyAllowSpecificOrigins,
+        policy =>
+        {
+            policy.AllowAnyOrigin()   // Allow any origin
+                  .AllowAnyMethod()   // Allow any HTTP method (GET, POST, etc.)
+                  .AllowAnyHeader();  // Allow any headers (Authorization, etc.)
+        }
+    );
+});
+
 builder.Services.AddScoped<ContestResultService>();
 builder.Services.AddScoped<ContestService>();
 
@@ -22,6 +37,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors(MyAllowSpecificOrigins);
 
 app.UseAuthorization();
 

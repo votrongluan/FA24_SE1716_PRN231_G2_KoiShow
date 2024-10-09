@@ -1,0 +1,178 @@
+﻿<div class="row"
+    <div class="col-md-10">
+        <h3 class="display-8">Contests List</h3>
+    </div>
+    <div class="col-ml-2 text-end">
+        <button type="button" class="btn btn-primary" onclick="add()";>
+            Add
+        </button>
+    </div>
+</div>
+
+<div class="modal fade" id="contestModal" tabindex="-1" aria-labelledby="contestModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frm", id = "frm" }))
+            {
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <h5 class="modal-title" id="contestModalLabel">Add New Contest</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="contestModalContent"></div>
+                    <!-- Thêm các trường thông tin ở đây để nhập liệu -->
+                    <div class="form-group">
+                        <label for="contestName">Contest Name</label>
+                        <input type="text" class="form-control" id="contestName" name="contestName" />
+                    </div>
+                    <div class="form-group">
+                        <label for="title">Title</label>
+                        <input type="text" class="form-control" id="title" name="title" />
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea class="form-control" id="description" name="Description"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="startDate">Start Date</label>
+                        <input type="date" class="form-control" id="startDate" name="StartDate" />
+                    </div>
+                    <div class="form-group">
+                        <label for="endDate">End Date</label>
+                        <input type="date" class="form-control" id="endDate" name="EndDate" />
+                    </div>
+                    <div class="form-group">
+                        <label for="location">Location</label>
+                        <input type="text" class="form-control" id="location" name="Location" />
+                    </div>
+                    <div class="form-group">
+                        <label for="competitionType">Competition Type</label>
+                        <input type="text" class="form-control" id="competitionType" name="CompetitionType" />
+                    </div>
+                    <div class="form-group">
+                        <label for="status">Status</label>
+                        <input type="number" class="form-control" id="status" name="Status" />
+                    </div>
+                    <div class="form-group">
+                        <label for="participants">Participants</label>
+                        <input type="number" class="form-control" id="participants" name="Participants" />
+                    </div>
+                    <div class="form-group">
+                        <label for="image">Image URL</label>
+                        <input type="text" class="form-control" id="image" name="Image" />
+                    </div>
+                    <div class="form-group">
+                        <label for="contactInfo">Contact Info</label>
+                        <input type="text" class="form-control" id="contactInfo" name="ContactInfo" />
+                    </div>
+                    <div class="form-group">
+                        <label for="shapePointPercent">Shape Point Percent</label>
+                        <input type="number" class="form-control" id="shapePointPercent" name="ShapePointPercent" />
+                    </div>
+                    <div class="form-group">
+                        <label for="colorPointPercent">Color Point Percent</label>
+                        <input type="number" class="form-control" id="colorPointPercent" name="ColorPointPercent" />
+                    </div>
+                    <div class="form-group">
+                        <label for="patternPointPercent">Pattern Point Percent</label>
+                        <input type="number" class="form-control" id="patternPointPercent" name="PatternPointPercent" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="btSave" type="button" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <table class="table table-striped table-bordered table-hover">
+            <thead>
+                <tr class="card-header">
+                    <th class="card-title text-center">ContestName</th>
+                    <th class="card-title text-center">Title</th>
+                    <th class="card-title text-center">Description</th>
+                    <th class="card-title text-center">StartDate</th>
+                    <th class="card-title text-center">EndDate</th>
+                    <th class="card-title text-center">Location</th>
+                    <th class="card-title text-center">CompetitionType</th>
+                    <th class="card-title text-center">Status</th>
+                    <th class="card-title text-center">Participants</th>
+                    <th class="card-title text-center">Image</th>
+                    <th class="card-title text-center">ContactInfo</th>
+                    <th class="card-title text-center">ShapePointPercent</th>
+                    <th class="card-title text-center">ColorPointPercent</th>
+                    <th class="card-title text-center">PatternPointPercent</th>
+                    <th class="card-title text-center"></th>
+                </tr>
+            </thead>
+            <tbody class="tblContestsAjax">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@* url: '@Url.Action("GetAll", "CatBanks")',*@
+
+@section scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            loadData();
+        });
+        function loadData() {
+            alert("Load data progressing ...");
+
+            $.ajax({
+                url: 'https://localhost:7046/api/Contests',
+                type: "GET",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    alert('Server response: ' + result.message);
+                    console.log(result);
+                    var html = '';
+                    $.each(result.data, function (key, item) {
+                        html += '<tr>';
+                        html += '<td>' + item.contestName + '</td>';
+                        html += '<td>' + item.title + '</td>';
+                        html += '<td>' + item.description + '</td>';
+                        html += '<td>' + item.startDate + '</td>';
+                        html += '<td>' + item.endDate + '</td>';
+                        html += '<td>' + item.location + '</td>';
+                        html += '<td>' + item.competitionType + '</td>';
+                        html += '<td>' + item.status + '</td>';
+                        html += '<td>' + item.participants + '</td>';
+                        html += '<td>' + item.image + '</td>';
+                        html += '<td>' + item.contactInfo + '</td>';
+                        html += '<td>' + item.shapePointPercent + '</td>';
+                        html += '<td>' + item.colorPointPercent + '</td>';
+                        html += '<td>' + item.patternPointPercent + '</td>';
+                        html += '<td></td>';
+                        html += '</tr>';
+                    });
+                    $('.tblContestsAjax').html(html);
+                },
+                error: function (xhr, error) {
+                    alert(xhr.statusText);
+                }
+            });
+        }
+
+        function add() {
+
+            // Làm rỗng nội dung trước khi mở modal
+            $("#contestModalContent").html("");
+
+            // Đặt lại tiêu đề modal khi mở để thêm mới
+            $("#contestModalLabel").html("Add New Contest");
+
+            // Hiển thị modal
+            $('#contestModal').modal('show');
+       }
+
+    </script>
+}

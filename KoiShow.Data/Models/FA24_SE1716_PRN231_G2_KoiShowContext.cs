@@ -52,7 +52,7 @@ public class FA24_SE1716_PRN231_G2_KoiShowContext : DbContext
     //=> optionsBuilder.UseSqlServer(GetConnectionString("DefaultConnection")).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 
     //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    //    => optionsBuilder.UseSqlServer("Data Source=LUAN;Initial Catalog=FA24_SE1716_PRN231_G2_KOISHOW;User ID=sa;Password=12345;Encrypt=False");
+    //    => optionsBuilder.UseSqlServer("Data Source=LUAN;Initial Catalog=FA24_SE1716_PRN231_G2_KoiShow;User ID=sa;Password=12345;Encrypt=False");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

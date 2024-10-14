@@ -123,7 +123,7 @@ namespace KoiShow.Data.Migrations
                             Password = "123",
                             Phone = "0971781352",
                             Role = 2,
-                            UserName = "customer"
+                            UserName = "customer1"
                         },
                         new
                         {
@@ -137,7 +137,7 @@ namespace KoiShow.Data.Migrations
                             Password = "123",
                             Phone = "0971781354",
                             Role = 2,
-                            UserName = "customer"
+                            UserName = "customer2"
                         },
                         new
                         {
@@ -151,7 +151,7 @@ namespace KoiShow.Data.Migrations
                             Password = "123",
                             Phone = "0971781355",
                             Role = 2,
-                            UserName = "customer"
+                            UserName = "customer3"
                         });
                 });
 

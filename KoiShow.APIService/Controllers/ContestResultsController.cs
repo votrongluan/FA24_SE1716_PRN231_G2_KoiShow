@@ -14,20 +14,19 @@ namespace KoiShow.APIService.Controllers
     [ApiController]
     public class ContestResultsController : ControllerBase
     {
-        // private readonly FA24_SE1716_PRN231_G2_KoiShowContext _context;
         private readonly ContestResultService _contestResultService;
 
-        public ContestResultsController(ContestResultService contestResultService) =>
+        public ContestResultsController(ContestResultService contestResultService)
+        {
             _contestResultService = contestResultService;
-
-        // GET: api/ContestResults
+        }
+            
         [HttpGet]
         public async Task<IBusinessResult> GetContestResults()
         {
             return await _contestResultService.GetAllAsync();
         }
 
-        // GET: api/ContestResults/5
         [HttpGet("{id}")]
         public async Task<IBusinessResult> GetContestResult(int id)
         {
@@ -36,15 +35,12 @@ namespace KoiShow.APIService.Controllers
             return contestResult;
         }
 
-        // PUT: api/ContestResults/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IBusinessResult> PutContestResult(int id, ContestResult contestResult)
         {
             return await _contestResultService.SaveAsync(contestResult);
         }
 
-        // DELETE: api/ContestResults/5
         [HttpDelete("{id}")]
         public async Task<IBusinessResult> DeleteContestResult(int id)
         {

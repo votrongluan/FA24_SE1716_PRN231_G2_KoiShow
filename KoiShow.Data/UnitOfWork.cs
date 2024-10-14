@@ -8,6 +8,7 @@ public class UnitOfWork
     private FA24_SE1716_PRN231_G2_KoiShowContext context;
     private ContestResultRepository contestResultRepository;
     private ContestRepository contestRepository;
+    private AccountRepository accountRepository;
 
     public UnitOfWork()
     {
@@ -27,6 +28,14 @@ public class UnitOfWork
         get
         {
             return contestRepository ??= new ContestRepository(context);
+        }
+    }
+
+    public AccountRepository AccountRepository
+    {
+        get
+        {
+            return accountRepository ??= new AccountRepository(context);
         }
     }
 }   

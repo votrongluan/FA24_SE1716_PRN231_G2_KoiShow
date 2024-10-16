@@ -1,0 +1,89 @@
+﻿@model IEnumerable<KoiShow.Data.Models.RegisterForm>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+
+
+<div class="row">
+    <div class="col-md-12">
+        <table class="table table-striped table-bordered table-hover">
+            <thead>
+                <tr class="card-header">
+                    <th class="card-title text-center">RegisterFormId</th>
+                    <th class="card-title text-center">ContestId</th>
+                    <th class="card-title text-center">AnimalId</th>
+                    <th class="card-title text-center">EntryTitle</th>
+                    <th class="card-title text-center">CheckinStatus</th>
+                    <th class="card-title text-center">RegistrationDate</th>
+                    <th class="card-title text-center">ApprovalStatus</th>
+                    <th class="card-title text-center">Notes</th>
+                    <th class="card-title text-center">Status</th>
+                    <th class="card-title text-center">Image</th>
+                    <th class="card-title text-center">HealthStatus</th>
+                    <th class="card-title text-center">Color</th>
+                    <th class="card-title text-center">Shape</th>
+                    <th class="card-title text-center">Pattern</th>
+                    <th class="card-title text-center"></th>
+                </tr>
+            </thead>
+            <tbody class="tblBanks">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@* url : '@Url.Action("GetAll","Payments"')*@
+
+@section scripts{
+    <script type="text/javascript">
+        $(document).ready(
+            function () {
+                loadData();
+            }
+        );
+
+       
+            function loadData() {
+                alert("Load data progressing ...");
+
+                $.ajax({
+                    url: 'https://localhost:7161/api/RegisterForm',
+                    type: "GET",
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json",
+                    success: function (result) {
+                        alert('Server response: ' + result.message);
+                        console.log(result);
+                        var html = '';
+                        $.each(result.data, function (key, item) {
+                            html += '<tr>';
+                            html += '<td>' + item.RegisterFormId + '</td>';
+                            html += '<td>' + item.ContestId + '</td>';
+                            html += '<td>' + item.AnimalId + '</td>';
+                            html += '<td>' + item.EntryTitle + '</td>';
+                            html += '<td>' + item.CheckinStatus + '</td>';
+                            html += '<td>' + item.RegistrationDate + '</td>';
+                            html += '<td>' + item.RegistrationDate + '</td>';
+                            html += '<td>' + item.ApprovalStatus + '</td>';
+                            html += '<td>' + item.Notes + '</td>';
+                            html += '<td>' + item.Status + '</td>';
+                            html += '<td>' + item.Image + '</td>';
+                            html += '<td>' + item.HealthStatus + '</td>';
+                            html += '<td>' + item.Color + '</td>';
+                            html += '<td>' + item.Shape + '</td>';
+                            html += '<td>' + item.Pattern + '</td>';
+                            html += '</tr>';
+                        });
+                        $('.tblBanks').html(html);
+                    },
+                    error: function (xhr, error) {
+                        alert(xhr.statusText);
+                    }
+                });
+            }
+    </script>
+}

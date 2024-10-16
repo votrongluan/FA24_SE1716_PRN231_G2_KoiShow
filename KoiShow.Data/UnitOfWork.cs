@@ -9,6 +9,7 @@ public class UnitOfWork
     private ContestResultRepository contestResultRepository;
     private ContestRepository contestRepository;
     private AccountRepository accountRepository;
+    private PointRepository pointRepository;
 
     public UnitOfWork()
     {
@@ -36,6 +37,14 @@ public class UnitOfWork
         get
         {
             return accountRepository ??= new AccountRepository(context);
+        }
+    }
+
+    public PointRepository PointRepository
+    {
+        get
+        {
+            return pointRepository ??= new PointRepository(context);
         }
     }
 }   

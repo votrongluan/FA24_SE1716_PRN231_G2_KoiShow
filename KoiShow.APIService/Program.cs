@@ -61,6 +61,8 @@ builder.Services.AddScoped<JwtHelper>();
 builder.Services.AddScoped<ContestResultService>();
 builder.Services.AddScoped<ContestService>();
 builder.Services.AddScoped<AccountService>();
+builder.Services.AddScoped<PaymentService>();
+builder.Services.AddScoped<RegisterFormService>();
 
 // Add authentication and JWT bearer configuration
 builder.Services.AddAuthentication("Bearer")

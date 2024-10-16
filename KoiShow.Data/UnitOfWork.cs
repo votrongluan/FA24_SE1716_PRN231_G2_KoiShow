@@ -10,6 +10,8 @@ public class UnitOfWork
     private ContestRepository contestRepository;
     private AccountRepository accountRepository;
     private PointRepository pointRepository;
+    private PaymentRepository paymentRepository;
+    private RegisterFormRepository registerFormRepository;
 
     public UnitOfWork()
     {
@@ -46,5 +48,15 @@ public class UnitOfWork
         {
             return pointRepository ??= new PointRepository(context);
         }
+    }
+
+    public PaymentRepository PPaymentRepository
+    {
+        get { return paymentRepository ??= new PaymentRepository(context); }
+    }
+
+    public RegisterFormRepository RRegisterFormRepository
+    {
+        get { return registerFormRepository ??= new RegisterFormRepository(context); }
     }
 }   

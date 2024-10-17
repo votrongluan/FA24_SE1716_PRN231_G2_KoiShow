@@ -1,6 +1,7 @@
 ﻿using KoiShow.Service.Base;
 using KoiShow.Service;
 using Microsoft.AspNetCore.Mvc;
+using KoiShow.Data.Models;
 
 namespace KoiShow.APIService.Controllers
 {

@@ -11,6 +11,7 @@ public interface IContestResultService
     Task<IBusinessResult> GetByIdAsync(int contestResultId);
     Task<IBusinessResult> SaveAsync(ContestResult contestResult);
     Task<IBusinessResult> DeleteByIdAsync(int contestResultId);
+    Task<IBusinessResult> GetPointsForContestResult(int contestId);
 }
 
 public class ContestResultService : IContestResultService
@@ -139,5 +140,10 @@ public class ContestResultService : IContestResultService
         {
             return new BusinessResult(Const.ERROR_EXCEPTION, ex.ToString());
         }
+    }
+
+    public Task<IBusinessResult> GetPointsForContestResult(int contestId)
+    {
+        throw new NotImplementedException();
     }
 }

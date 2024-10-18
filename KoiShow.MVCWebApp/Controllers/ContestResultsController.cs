@@ -16,7 +16,7 @@ namespace KoiShow.MVCWebApp.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 5, string searchTerm = "")
         {
             using (var httpClient = new HttpClient())
             {
@@ -31,7 +31,22 @@ namespace KoiShow.MVCWebApp.Controllers
                         {
                             var data = JsonConvert.DeserializeObject<List<ContestResult>>(result.Data.ToString());
 
-                            return View(data);
+                            // Filter by search term
+                            if (!string.IsNullOrEmpty(searchTerm))
+                            {
+                                data = data.Where(x => x.ContestResultName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) || x.WinnerName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) || x.Comments.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+                            }
+
+                            // Implement paging
+                            var totalResults = data.Count;
+                            var totalPages = (int)Math.Ceiling(totalResults / (double)pageSize);
+                            var pagedData = data.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+
+                            ViewBag.CurrentPage = pageNumber;
+                            ViewBag.TotalPages = totalPages;
+                            ViewBag.SearchTerm = searchTerm;
+
+                            return View(pagedData);
                         }
                     }
                 }

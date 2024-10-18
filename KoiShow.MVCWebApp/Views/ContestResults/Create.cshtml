@@ -7,71 +7,95 @@
 <h1>Create</h1>
 
 <h4>ContestResult</h4>
+
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="ContestId" class="control-label"></label>
-                <select asp-for="ContestId" class ="form-control" asp-items="ViewBag.ContestId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="ContestResultName" class="control-label"></label>
-                <input asp-for="ContestResultName" class="form-control" />
-                <span asp-validation-for="ContestResultName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ContestResultDescription" class="control-label"></label>
-                <input asp-for="ContestResultDescription" class="form-control" />
-                <span asp-validation-for="ContestResultDescription" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="WinnerName" class="control-label"></label>
-                <input asp-for="WinnerName" class="form-control" />
-                <span asp-validation-for="WinnerName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="TotalScore" class="control-label"></label>
-                <input asp-for="TotalScore" class="form-control" />
-                <span asp-validation-for="TotalScore" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Rank" class="control-label"></label>
-                <input asp-for="Rank" class="form-control" />
-                <span asp-validation-for="Rank" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Comments" class="control-label"></label>
-                <input asp-for="Comments" class="form-control" />
-                <span asp-validation-for="Comments" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="IsPublished" class="control-label"></label>
-                <input asp-for="IsPublished" class="form-control" />
-                <span asp-validation-for="IsPublished" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Category" class="control-label"></label>
-                <input asp-for="Category" class="form-control" />
-                <span asp-validation-for="Category" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Prize" class="control-label"></label>
-                <input asp-for="Prize" class="form-control" />
-                <span asp-validation-for="Prize" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PrizeDescription" class="control-label"></label>
-                <input asp-for="PrizeDescription" class="form-control" />
-                <span asp-validation-for="PrizeDescription" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+
+<form asp-action="Create">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <table class="table table-bordered shadow-lg" style="border-radius: 10px; overflow: hidden;">
+        <thead class="bg-primary text-white">
+            <tr>
+                <th class="text-center">Contest Information</th>
+                <th class="text-center">Winner Information</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="bg-light">
+                <td style="border-right: 2px solid #dee2e6;">
+                    <div class="p-3" style="border-radius: 10px; background-color: #f9f9f9;">
+                        <div class="form-group">
+                            <label asp-for="ContestResultName" class="control-label">Name</label>
+                            <input asp-for="ContestResultName" class="form-control" />
+                            <span asp-validation-for="ContestResultName" class="text-danger"></span>
+                        </div>
+                        <div class="form-group mt-2">
+                            <label asp-for="ContestResultDescription" class="control-label">Description</label>
+                            <input asp-for="ContestResultDescription" class="form-control" />
+                            <span asp-validation-for="ContestResultDescription" class="text-danger"></span>
+                        </div>
+                        <div class="form-group mt-2">
+                            <label asp-for="Category" class="control-label">Category</label>
+                            <input asp-for="Category" class="form-control" />
+                            <span asp-validation-for="Category" class="text-danger"></span>
+                        </div>
+                        <div class="form-group mt-2">
+                            <label asp-for="ContestId" class="control-label">Contest</label>
+                            <select asp-for="ContestId" class="form-control" asp-items="ViewBag.ContestId"></select>
+                        </div>
+                        <div class="form-group mt-2">
+                            <label asp-for="Rank" class="control-label">Rank</label>
+                            <input asp-for="Rank" class="form-control" />
+                            <span asp-validation-for="Rank" class="text-danger"></span>
+                        </div>
+                        <div class="form-group mt-2">
+                            <label asp-for="TotalScore" class="control-label">Total Score</label>
+                            <input asp-for="TotalScore" class="form-control" />
+                            <span asp-validation-for="TotalScore" class="text-danger"></span>
+                        </div>
+                        <div class="form-group mt-2">
+                            <label asp-for="Comments" class="control-label">Comments</label>
+                            <input asp-for="Comments" class="form-control" />
+                            <span asp-validation-for="Comments" class="text-danger"></span>
+                        </div>
+                        <div class="form-group mt-2">
+                            <label asp-for="IsPublished" class="control-label">Published</label>
+                            <div>
+                                <input type="radio" asp-for="IsPublished" value="true" id="IsPublishedTrue" />
+                                <label for="IsPublishedTrue">Published</label>
+                                <input type="radio" asp-for="IsPublished" value="false" id="IsPublishedFalse" />
+                                <label for="IsPublishedFalse">Not Published</label>
+                            </div>
+                            <span asp-validation-for="IsPublished" class="text-danger"></span>
+                        </div>
+                        <div class="form-group mt-2">
+                            <label asp-for="WinnerName" class="control-label">Winner Name</label>
+                            <input asp-for="WinnerName" class="form-control" />
+                            <span asp-validation-for="WinnerName" class="text-danger"></span>
+                        </div>
+                        <div class="form-group mt-2">
+                            <label asp-for="Prize" class="control-label">Prize</label>
+                            <input asp-for="Prize" class="form-control" />
+                            <span asp-validation-for="Prize" class="text-danger"></span>
+                        </div>
+                        <div class="form-group mt-2">
+                            <label asp-for="PrizeDescription" class="control-label">Prize Description</label>
+                            <input asp-for="PrizeDescription" class="form-control" />
+                            <span asp-validation-for="PrizeDescription" class="text-danger"></span>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="p-3" style="border-radius: 10px; background-color: #f9f9f9;">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="form-group">
+        <input type="submit" value="Create" class="btn btn-primary" />
     </div>
-</div>
+</form>
 
 <div>
     <a asp-action="Index">Back to List</a>

@@ -30,7 +30,7 @@ public class ContestResultService : IContestResultService
 
         try
         {
-            var contestResults = await _unitOfWork.ContestResultRepository.GetAllAsync();
+            var contestResults = await _unitOfWork.ContestResultRepository.GetAllWithIncludeAsync(e => e.Contest);
 
             if (contestResults == null)
             {

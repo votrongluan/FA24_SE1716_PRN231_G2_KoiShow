@@ -13,89 +13,90 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.ContestResultName)
+                Name
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ContestResultDescription)
+                Description
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.TotalScore)
+                Total Score
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Rank)
+                Rank
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Comments)
+                Comment
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.IsFinalized)
+                Finalized
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.IsPublished)
+                Published
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Category)
+                Category
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Status)
+                Status
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Prize)
+                Prize
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.PrizeDescription)
+                Prize Description
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Contest)
+                Contest
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.ContestResultName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ContestResultDescription)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TotalScore)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Rank)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Comments)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsFinalized)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsPublished)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Category)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Prize)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PrizeDescription)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Contest.CompetitionType)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ContestResultName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ContestResultDescription)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TotalScore)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Rank)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Comments)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IsFinalized)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IsPublished)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Category)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Prize)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PrizeDescription)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Contest.ContestName)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

@@ -119,7 +119,7 @@ namespace KoiShow.MVCWebApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,ContestId,ContestResultName,ContestResultDescription,TotalScore,Rank,Comments,IsFinalized,IsPublished,Category,Status,Prize,PrizeDescription")] ContestResult contestResult)
+        public async Task<IActionResult> Create([Bind("Id,ContestId,ContestResultName,ContestResultDescription,TotalScore,Rank,Comments,WinnerName,IsPublished,Category,Prize,PrizeDescription")] ContestResult contestResult)
         {
             bool saveStatus = false;
 
@@ -196,7 +196,7 @@ namespace KoiShow.MVCWebApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,ContestId,ContestResultName,ContestResultDescription,TotalScore,Rank,Comments,IsFinalized,IsPublished,Category,Status,Prize,PrizeDescription")] ContestResult contestResult)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,ContestId,ContestResultName,ContestResultDescription,TotalScore,Rank,Comments,WinnerName,IsPublished,Category,Prize,PrizeDescription")] ContestResult contestResult)
         {
             bool saveStatus = false;
 

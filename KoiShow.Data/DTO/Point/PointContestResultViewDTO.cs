@@ -8,7 +8,7 @@ namespace KoiShow.Data.DTO.Point
 {
     public class PointContestResultViewDTO
     {
-        public string? AnimalName;
-        public int? TotalScore;
+        public string? AnimalName { get; set; }
+        public int? TotalScore { get; set; }
     }
 }

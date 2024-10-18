@@ -50,7 +50,11 @@
             </div>
             <div class="form-group">
                 <label asp-for="IsPublished" class="control-label"></label>
-                <input asp-for="IsPublished" class="form-control" />
+                <select asp-for="IsPublished" class="form-control">
+                    <option value="">-- Select Status --</option>
+                    <option value="true">Published</option>
+                    <option value="false">Not Published</option>
+                </select>
                 <span asp-validation-for="IsPublished" class="text-danger"></span>
             </div>
             <div class="form-group">

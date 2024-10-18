@@ -68,6 +68,7 @@ builder.Services.AddScoped<ContestService>();
 builder.Services.AddScoped<AccountService>();
 builder.Services.AddScoped<PaymentService>();
 builder.Services.AddScoped<RegisterFormService>();
+builder.Services.AddScoped<PointService>();
 
 // Add authentication and JWT bearer configuration
 builder.Services.AddAuthentication("Bearer")

@@ -12,8 +12,4 @@
     <ProjectReference Include="..\KoiShow.Data\KoiShow.Data.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Views\ContestResultsAjax\" />
-  </ItemGroup>
-
 </Project>

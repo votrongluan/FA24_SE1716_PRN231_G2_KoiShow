@@ -29,6 +29,11 @@
                 <span asp-validation-for="ContestResultDescription" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="WinnerName" class="control-label"></label>
+                <input asp-for="WinnerName" class="form-control" />
+                <span asp-validation-for="WinnerName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="TotalScore" class="control-label"></label>
                 <input asp-for="TotalScore" class="form-control" />
                 <span asp-validation-for="TotalScore" class="text-danger"></span>
@@ -44,11 +49,6 @@
                 <span asp-validation-for="Comments" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="IsFinalized" class="control-label"></label>
-                <input asp-for="IsFinalized" class="form-control" />
-                <span asp-validation-for="IsFinalized" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <label asp-for="IsPublished" class="control-label"></label>
                 <input asp-for="IsPublished" class="form-control" />
                 <span asp-validation-for="IsPublished" class="text-danger"></span>
@@ -57,11 +57,6 @@
                 <label asp-for="Category" class="control-label"></label>
                 <input asp-for="Category" class="form-control" />
                 <span asp-validation-for="Category" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Status" class="control-label"></label>
-                <input asp-for="Status" class="form-control" />
-                <span asp-validation-for="Status" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Prize" class="control-label"></label>

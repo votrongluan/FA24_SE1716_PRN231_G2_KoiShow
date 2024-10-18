@@ -19,6 +19,9 @@
                 Description
             </th>
             <th>
+                Winner Name
+            </th>
+            <th>
                 Total Score
             </th>
             <th>
@@ -28,16 +31,10 @@
                 Comment
             </th>
             <th>
-                Finalized
-            </th>
-            <th>
                 Published
             </th>
             <th>
                 Category
-            </th>
-            <th>
-                Status
             </th>
             <th>
                 Prize
@@ -62,6 +59,9 @@
                     @Html.DisplayFor(modelItem => item.ContestResultDescription)
                 </td>
                 <td>
+                    @Html.DisplayFor(modelItem => item.WinnerName)
+                </td>
+                <td>
                     @Html.DisplayFor(modelItem => item.TotalScore)
                 </td>
                 <td>
@@ -71,16 +71,10 @@
                     @Html.DisplayFor(modelItem => item.Comments)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.IsFinalized)
-                </td>
-                <td>
                     @Html.DisplayFor(modelItem => item.IsPublished)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Category)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Status)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Prize)

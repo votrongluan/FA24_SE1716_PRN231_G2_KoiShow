@@ -23,6 +23,12 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.ContestResultDescription)
         </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.WinnerName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.WinnerName)
+        </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.TotalScore)
         </dt>
@@ -42,12 +48,6 @@
             @Html.DisplayFor(model => model.Comments)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IsFinalized)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IsFinalized)
-        </dd>
-        <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.IsPublished)
         </dt>
         <dd class = "col-sm-10">
@@ -58,12 +58,6 @@
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Category)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Status)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Prize)

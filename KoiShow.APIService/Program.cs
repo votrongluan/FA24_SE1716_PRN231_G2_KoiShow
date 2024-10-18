@@ -14,7 +14,7 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<FA24_SE1716_PRN231_G2_KoiShowContext>();
 builder.Services.AddControllersWithViews().AddJsonOptions(options =>
 {
-    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 });
 
 builder.Services.AddSwaggerGen(options =>

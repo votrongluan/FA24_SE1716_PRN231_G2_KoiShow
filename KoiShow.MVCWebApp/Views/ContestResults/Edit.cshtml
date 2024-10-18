@@ -4,85 +4,116 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
-
-<h4>ContestResult</h4>
+<h4>Edit Contest Result</h4>
 <hr />
-<div class="row">
-    <div class="col-md-4">
+<div class="row justify-content-center">
+    <div class="col-md-12">
         <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
             <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="ContestId" class="control-label"></label>
-                <select asp-for="ContestId" class="form-control" asp-items="ViewBag.ContestId"></select>
-                <span asp-validation-for="ContestId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ContestResultName" class="control-label"></label>
-                <input asp-for="ContestResultName" class="form-control" />
-                <span asp-validation-for="ContestResultName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ContestResultDescription" class="control-label"></label>
-                <input asp-for="ContestResultDescription" class="form-control" />
-                <span asp-validation-for="ContestResultDescription" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="WinnerName" class="control-label"></label>
-                <input asp-for="WinnerName" class="form-control" />
-                <span asp-validation-for="WinnerName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="TotalScore" class="control-label"></label>
-                <input asp-for="TotalScore" class="form-control" />
-                <span asp-validation-for="TotalScore" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Rank" class="control-label"></label>
-                <input asp-for="Rank" class="form-control" />
-                <span asp-validation-for="Rank" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Comments" class="control-label"></label>
-                <input asp-for="Comments" class="form-control" />
-                <span asp-validation-for="Comments" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="IsPublished" class="control-label"></label>
-                <select asp-for="IsPublished" class="form-control">
-                    <option value="">-- Select Status --</option>
-                    <option value="true">Published</option>
-                    <option value="false">Not Published</option>
-                </select>
-                <span asp-validation-for="IsPublished" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Category" class="control-label"></label>
-                <input asp-for="Category" class="form-control" />
-                <span asp-validation-for="Category" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Prize" class="control-label"></label>
-                <input asp-for="Prize" class="form-control" />
-                <span asp-validation-for="Prize" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PrizeDescription" class="control-label"></label>
-                <input asp-for="PrizeDescription" class="form-control" />
-                <span asp-validation-for="PrizeDescription" class="text-danger"></span>
-            </div>
-            <div class="form-group">
+            <table class="table table-bordered shadow-lg" style="border-radius: 10px; overflow: hidden;">
+                <thead class="bg-primary text-white">
+                    <tr>
+                        <th class="text-center">Contest Information</th>
+                        <th class="text-center">Winner Information</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="bg-light">
+                        <td style="border-right: 2px solid #dee2e6;">
+                            <div class="p-3" style="border-radius: 10px; background-color: #f9f9f9;">
+                                <div class="form-group">
+                                    <label asp-for="ContestId" class="control-label"><strong>Contest:</strong></label>
+                                    <select asp-for="ContestId" class="form-control" asp-items="ViewBag.ContestId"></select>
+                                    <span asp-validation-for="ContestId" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mt-3">
+                                    <label asp-for="ContestResultName" class="control-label"><strong>Contest Name:</strong></label>
+                                    <input asp-for="ContestResultName" class="form-control" />
+                                    <span asp-validation-for="ContestResultName" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mt-3">
+                                    <label asp-for="ContestResultDescription" class="control-label"><strong>Description:</strong></label>
+                                    <input asp-for="ContestResultDescription" class="form-control" />
+                                    <span asp-validation-for="ContestResultDescription" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mt-3">
+                                    <label asp-for="Category" class="control-label"><strong>Category:</strong></label>
+                                    <input asp-for="Category" class="form-control" />
+                                    <span asp-validation-for="Category" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mt-3">
+                                    <label asp-for="Rank" class="control-label"><strong>Rank:</strong></label>
+                                    <select asp-for="Rank" class="form-control">
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                    </select>
+                                    <span asp-validation-for="Rank" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mt-3">
+                                    <label asp-for="Comments" class="control-label"><strong>Comments:</strong></label>
+                                    <input asp-for="Comments" class="form-control" />
+                                    <span asp-validation-for="Comments" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mt-3">
+                                    <label asp-for="TotalScore" class="control-label"><strong>Score:</strong></label>
+                                    <input asp-for="TotalScore" class="form-control" />
+                                    <span asp-validation-for="TotalScore" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td>
+                            <div class="p-3" style="border-radius: 10px; background-color: #f9f9f9;">
+                                <div class="form-group">
+                                    <label asp-for="WinnerName" class="control-label"><strong>Winner Name:</strong></label>
+                                    <input asp-for="WinnerName" class="form-control" />
+                                    <span asp-validation-for="WinnerName" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mt-3">
+                                    <label asp-for="Prize" class="control-label"><strong>Prize:</strong></label>
+                                    <input asp-for="Prize" class="form-control" />
+                                    <span asp-validation-for="Prize" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mt-3">
+                                    <label asp-for="PrizeDescription" class="control-label"><strong>Prize Description:</strong></label>
+                                    <input asp-for="PrizeDescription" class="form-control" />
+                                    <span asp-validation-for="PrizeDescription" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mt-3">
+                                    <label asp-for="IsPublished" class="control-label"><strong>Published:</strong></label>
+                                    <select asp-for="IsPublished" class="form-control">
+                                        <option value="true">Published</option>
+                                        <option value="false">Not Published</option>
+                                    </select>
+                                    <span asp-validation-for="IsPublished" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="form-group mt-4 text-center">
+                <a asp-action="Index" class="btn btn-secondary ml-2">Back to List</a>
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

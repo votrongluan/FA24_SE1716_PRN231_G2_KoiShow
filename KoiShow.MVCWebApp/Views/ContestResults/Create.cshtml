@@ -4,24 +4,20 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
-
 <h4>ContestResult</h4>
-
 <hr />
-
 <form asp-action="Create">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <table class="table table-bordered shadow-lg" style="border-radius: 10px; overflow: hidden;">
         <thead class="bg-primary text-white">
             <tr>
-                <th class="text-center">Contest Information</th>
-                <th class="text-center">Winner Information</th>
+                <th class="text-center">Create Information</th>
+                <th class="text-center">Point Information</th>
             </tr>
         </thead>
         <tbody>
             <tr class="bg-light">
-                <td style="border-right: 2px solid #dee2e6;">
+                <td style="width: 500px; border-right: 2px solid #dee2e6;">
                     <div class="p-3" style="border-radius: 10px; background-color: #f9f9f9;">
                         <div class="form-group">
                             <label asp-for="ContestResultName" class="control-label">Name</label>
@@ -40,11 +36,15 @@
                         </div>
                         <div class="form-group mt-2">
                             <label asp-for="ContestId" class="control-label">Contest</label>
-                            <select asp-for="ContestId" class="form-control" asp-items="ViewBag.ContestId"></select>
+                            <select asp-for="ContestId" class="form-control" asp-items="ViewBag.ContestId" id="contestIdSelect"></select>
                         </div>
                         <div class="form-group mt-2">
                             <label asp-for="Rank" class="control-label">Rank</label>
-                            <input asp-for="Rank" class="form-control" />
+                            <select asp-for="Rank" class="form-control">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                            </select>
                             <span asp-validation-for="Rank" class="text-danger"></span>
                         </div>
                         <div class="form-group mt-2">
@@ -84,23 +84,63 @@
                         </div>
                     </div>
                 </td>
+
                 <td>
-                    <div class="p-3" style="border-radius: 10px; background-color: #f9f9f9;">
-                        
+                    <div id="pointInformation" class="p-3" style="border-radius: 10px; background-color: #f9f9f9;">
+                        <!-- Points information will be loaded here -->
                     </div>
                 </td>
             </tr>
         </tbody>
     </table>
-    <div class="form-group">
+    <div class="form-group mt-4 text-center">
+        <a asp-action="Index" class="btn btn-secondary ml-2">Back to List</a>
         <input type="submit" value="Create" class="btn btn-primary" />
     </div>
 </form>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        $(document).ready(function () {
+            var contestId = $('#contestIdSelect').val();
+            if (contestId) {
+                loadData(contestId);
+            }
+
+            $('#contestIdSelect').change(function () {
+                var selectedContestId = $(this).val();
+                if (selectedContestId) {
+                    loadData(selectedContestId);
+                }
+            });
+        });
+
+        function loadData(contestId) {
+            $.ajax({
+                url: `https://localhost:7046/api/ContestResults/points/${contestId}`,
+                type: "GET",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    var html = '<table class="table">';
+                    html += '<thead><tr><th>Animal Name</th><th>Total Score</th></tr></thead><tbody>';
+                    $.each(result.data, function (key, item) {
+                        html += '<tr>';
+                        html += '<td>' + item.animalName + '</td>';
+                        html += '<td>' + item.totalScore + '</td>';
+                        html += '</tr>';
+                    });
+                    html += '</tbody></table>';
+                    $('#pointInformation').html(html);
+                },
+                error: function (xhr, error) {
+                    alert(xhr.statusText);
+                }
+            });
+        }
+    </script>
 }

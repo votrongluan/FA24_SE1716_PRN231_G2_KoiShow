@@ -16,7 +16,6 @@ namespace KoiShow.MVCWebApp.Controllers
             _context = context;
         }
 
-        // GET: ContestResults
         public async Task<IActionResult> Index()
         {
             using (var httpClient = new HttpClient())
@@ -41,7 +40,6 @@ namespace KoiShow.MVCWebApp.Controllers
             return View(new List<ContestResult>());
         }
 
-        // GET: ContestResults/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -77,7 +75,7 @@ namespace KoiShow.MVCWebApp.Controllers
 
             using (var httpClient = new HttpClient())
             {
-                using (var response = await httpClient.GetAsync(Const.APIEndPoint + $"Contest"))
+                using (var response = await httpClient.GetAsync(Const.APIEndPoint + $"Contests"))
                 {
                     if (response.IsSuccessStatusCode)
                     {
@@ -97,7 +95,6 @@ namespace KoiShow.MVCWebApp.Controllers
             return contests;
         }
 
-        // GET: ContestResults/Create
         public async Task<IActionResult> Create()
         {
             var data = await this.GetContest();
@@ -105,12 +102,9 @@ namespace KoiShow.MVCWebApp.Controllers
             return View();
         }
 
-        // POST: ContestResults/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ContestResultId,ContestId,ContestResultName,ContestResultDescription,TotalScore,Rank,Comments,IsFinalized,IsPublished,Category,Status,Prize,PrizeDescription")] ContestResult contestResult)
+        public async Task<IActionResult> Create([Bind("Id,ContestId,ContestResultName,ContestResultDescription,TotalScore,Rank,Comments,IsFinalized,IsPublished,Category,Status,Prize,PrizeDescription")] ContestResult contestResult)
         {
             bool saveStatus = false;
 
@@ -150,7 +144,6 @@ namespace KoiShow.MVCWebApp.Controllers
             }
         }
 
-        // GET: ContestResults/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -186,12 +179,9 @@ namespace KoiShow.MVCWebApp.Controllers
             return View(contestResult);
         }
 
-        // POST: ContestResults/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ContestResultId,ContestId,ContestResultName,ContestResultDescription,TotalScore,Rank,Comments,IsFinalized,IsPublished,Category,Status,Prize,PrizeDescription")] ContestResult contestResult)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,ContestId,ContestResultName,ContestResultDescription,TotalScore,Rank,Comments,IsFinalized,IsPublished,Category,Status,Prize,PrizeDescription")] ContestResult contestResult)
         {
             bool saveStatus = false;
 
@@ -231,7 +221,6 @@ namespace KoiShow.MVCWebApp.Controllers
             }
         }
 
-        // GET: ContestResults/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -266,7 +255,6 @@ namespace KoiShow.MVCWebApp.Controllers
             return View(contestResult);
         }
 
-        // POST: ContestResults/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

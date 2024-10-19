@@ -9,6 +9,7 @@ using KoiShow.Data.Models;
 using KoiShow.Common;
 using Newtonsoft.Json;
 using KoiShow.Service.Base;
+using KoiShow.MVCWebApp.Helpers;
 
 namespace KoiShow.MVCWebApp.Controllers
 {
@@ -45,7 +46,34 @@ namespace KoiShow.MVCWebApp.Controllers
         //    return View(new List<Payment>());
         //}
 
-        public async Task<IActionResult> Index()
+        //public async Task<IActionResult> Index()
+        //{
+        //    List<Payment> payments = new List<Payment>();
+
+        //    using (var httpClient = new HttpClient())
+        //    {
+        //        var response = await httpClient.GetAsync(Const.APIEndPoint + "Payments");
+
+        //        if (response.IsSuccessStatusCode)
+        //        {
+        //            var content = await response.Content.ReadAsStringAsync();
+        //            var result = JsonConvert.DeserializeObject<BusinessResult>(content);
+
+        //            if (result != null && result.Data != null)
+        //            {
+        //                payments = JsonConvert.DeserializeObject<List<Payment>>(result.Data.ToString());
+        //            }
+        //        }
+        //        else
+        //        {
+        //            // Handle error response from the API (optional)
+        //            ModelState.AddModelError(string.Empty, "Failed to load payments from API.");
+        //        }
+        //    }
+        //    return View(payments);
+        //}
+
+        public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 5)
         {
             List<Payment> payments = new List<Payment>();
 
@@ -65,12 +93,14 @@ namespace KoiShow.MVCWebApp.Controllers
                 }
                 else
                 {
-                    // Handle error response from the API (optional)
                     ModelState.AddModelError(string.Empty, "Failed to load payments from API.");
                 }
             }
-            return View(payments);
+
+            var pagedPayments = PaginationHelper<Payment>.GetPagedData(payments.AsQueryable(), pageNumber, pageSize);
+            return View(pagedPayments);
         }
+
 
         // GET: Payments/Details/5
         public async Task<IActionResult> Details(int? id)

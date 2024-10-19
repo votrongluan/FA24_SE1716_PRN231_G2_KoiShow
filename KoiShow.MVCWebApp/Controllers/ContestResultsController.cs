@@ -9,7 +9,7 @@ namespace KoiShow.MVCWebApp.Controllers
 {
     public class ContestResultsController : Controller
     {
-        public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 5, string searchTerm = "")
+        public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 2, string searchTerm = "")
         {
             using (var httpClient = new HttpClient())
             {
@@ -38,6 +38,7 @@ namespace KoiShow.MVCWebApp.Controllers
                             ViewBag.CurrentPage = pageNumber;
                             ViewBag.TotalPages = totalPages;
                             ViewBag.SearchTerm = searchTerm;
+                            ViewBag.PageSize = pageSize;
 
                             return View(pagedData);
                         }

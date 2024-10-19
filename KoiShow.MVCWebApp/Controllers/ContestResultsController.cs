@@ -9,13 +9,6 @@ namespace KoiShow.MVCWebApp.Controllers
 {
     public class ContestResultsController : Controller
     {
-        private readonly FA24_SE1716_PRN231_G2_KoiShowContext _context;
-
-        public ContestResultsController(FA24_SE1716_PRN231_G2_KoiShowContext context)
-        {
-            _context = context;
-        }
-
         public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 5, string searchTerm = "")
         {
             using (var httpClient = new HttpClient())
@@ -154,7 +147,7 @@ namespace KoiShow.MVCWebApp.Controllers
             }
             else
             {
-                ViewData["ContestId"] = new SelectList(_context.Contests, "ContestId", "ContestName", contestResult.ContestId);
+                ViewData["ContestId"] = new SelectList(await this.GetContest(), "Id", "ContestName");
                 return View(contestResult);
             }
         }
@@ -231,7 +224,7 @@ namespace KoiShow.MVCWebApp.Controllers
             }
             else
             {
-                ViewData["ContestId"] = new SelectList(_context.Contests, "ContestId", "ContestName", contestResult.ContestId);
+                ViewData["ContestId"] = new SelectList(await this.GetContest(), "Id", "ContestName");
                 return View(contestResult);
             }
         }

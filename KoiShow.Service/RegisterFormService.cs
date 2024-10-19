@@ -8,8 +8,8 @@ namespace KoiShow.Service
 {
     public interface IRegisterFormService
     {
-        Task<IBusinessResult> GetAll();
-        Task<IBusinessResult> GetById(int registerFormId);
+        Task<IBusinessResult> GetAllWithPayment();
+        Task<IBusinessResult> GetByIdWithPayment(int registerFormId);
     }
 
     public class RegisterFormService : IRegisterFormService
@@ -20,7 +20,7 @@ namespace KoiShow.Service
         {
             _unitOfWork ??= new UnitOfWork();
         }
-        public async Task<IBusinessResult> GetAll()
+        public async Task<IBusinessResult> GetAllWithPayment()
         {
             #region Business Rule
 
@@ -39,7 +39,7 @@ namespace KoiShow.Service
             }
         }
 
-        public async Task<IBusinessResult> GetById(int registerFormId)
+        public async Task<IBusinessResult> GetByIdWithPayment(int registerFormId)
         {
             #region Business Rule
 

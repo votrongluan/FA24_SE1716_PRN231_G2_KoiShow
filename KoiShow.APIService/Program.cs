@@ -70,6 +70,7 @@ builder.Services.AddScoped<PaymentService>();
 builder.Services.AddScoped<RegisterFormService>();
 builder.Services.AddScoped<PointService>();
 builder.Services.AddScoped<AnimalService>();
+builder.Services.AddScoped<VarietyService>();
 
 // Add authentication and JWT bearer configuration
 builder.Services.AddAuthentication("Bearer")

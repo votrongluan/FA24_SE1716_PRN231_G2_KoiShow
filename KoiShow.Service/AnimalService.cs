@@ -86,18 +86,16 @@ namespace KoiShow.Service
                         return new BusinessResult(Const.FAIL_UPDATE_CODE, Const.FAIL_UPDATE_MSG, new List<Animal>());
                     }
                 }
+
+                result = await _unitOfWork.AnimalRepository.CreateAsync(animal);
+
+                if (result > 0)
+                {
+                    return new BusinessResult(Const.SUCCESS_CREATE_CODE, Const.SUCCESS_CREATE_MSG, animal);
+                }
                 else
                 {
-                    result = await _unitOfWork.AnimalRepository.CreateAsync(animal);
-
-                    if (result > 0)
-                    {
-                        return new BusinessResult(Const.SUCCESS_CREATE_CODE, Const.SUCCESS_CREATE_MSG, animal);
-                    }
-                    else
-                    {
-                        return new BusinessResult(Const.FAIL_CREATE_CODE, Const.FAIL_CREATE_MSG, new List<Animal>());
-                    }
+                    return new BusinessResult(Const.FAIL_CREATE_CODE, Const.FAIL_CREATE_MSG, new List<Animal>());
                 }
             }
             catch (Exception ex)

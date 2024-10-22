@@ -67,7 +67,6 @@ public class UnitOfWork
     {
         get { return animalRepository ??= new AnimalRepository(context); }
     }
-}   
 
     public async Task<List<PaymentDtoResponse>> GetAllPaymentsAsync()
     {

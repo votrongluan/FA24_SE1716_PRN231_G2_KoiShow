@@ -12,6 +12,7 @@ public class UnitOfWork
     private PointRepository pointRepository;
     private PaymentRepository paymentRepository;
     private RegisterFormRepository registerFormRepository;
+    private AnimalRepository animalRepository;
 
     public UnitOfWork()
     {
@@ -58,5 +59,10 @@ public class UnitOfWork
     public RegisterFormRepository RRegisterFormRepository
     {
         get { return registerFormRepository ??= new RegisterFormRepository(context); }
+    }
+
+    public AnimalRepository AnimalRepository
+    {
+        get { return animalRepository ??= new AnimalRepository(context); }
     }
 }   

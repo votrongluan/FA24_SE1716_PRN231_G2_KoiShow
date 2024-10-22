@@ -1,0 +1,61 @@
+﻿@model IEnumerable<KoiShow.Data.Models.Animal>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Animals</h1>
+
+<table class="table" id="animalTable">
+    <thead>
+        <tr>
+            <th>Animal Name</th>
+            <th>Size</th>
+            <th>Birth Date</th>
+            <th>Image Link</th>
+            <th>Weight</th>
+            <th>Description</th>
+            <th>Health Status</th>
+            <th>Gender</th>
+            <th>Variety</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Rows will be dynamically inserted here -->
+    </tbody>
+</table>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        // Make the AJAX call to the API to get the data
+        $.ajax({
+            url: 'https://localhost:7046/api/Animals',
+            method: 'GET',
+            success: function (response) {
+                // Access the "data" field in the response
+                var animals = response.data;
+
+                // Populate the table with data
+                var rows = '';
+                $.each(animals, function (index, animal) {
+                    rows += '<tr>';
+                    rows += '<td>' + animal.animalName + '</td>';
+                    rows += '<td>' + animal.size + '</td>';
+                    rows += '<td>' + new Date(animal.birthDate).toLocaleDateString() + '</td>';
+                    rows += '<td>' + animal.imgLink + '</td>'; // Display imgLink as text
+                    rows += '<td>' + animal.weight + '</td>';
+                    rows += '<td>' + animal.description + '</td>';
+                    rows += '<td>' + animal.heathStatus + '</td>';
+                    rows += '<td>' + (animal.gender == 1 ? "Đực" : "Cái") + '</td>';
+                    rows += '<td>' + animal.variety.name + '</td>';
+                    rows += '</tr>';
+                });
+                $('#animalTable tbody').html(rows); // Insert rows into table
+            },
+            error: function (xhr, status, error) {
+                console.error('Error fetching data from API: ' + error);
+            }
+        });
+    });
+</script>

@@ -10,7 +10,7 @@ using KoiShow.Common;
 using KoiShow.Service.Base;
 using Newtonsoft.Json;
 
-namespace KoiShow.MVCWebApp
+namespace KoiShow.MVCWebApp.Controllers
 {
     public class AnimalsController : Controller
     {
@@ -70,30 +70,87 @@ namespace KoiShow.MVCWebApp
             return View(new Animal());
         }
 
-        // GET: Animals/Create
-        public IActionResult Create()
+        public async Task<List<Variety>> GetVarieties()
         {
-            ViewData["OwnerId"] = new SelectList(_context.Accounts, "Id", "Id");
-            ViewData["VarietyId"] = new SelectList(_context.Varieties, "Id", "Id");
+            List<Variety> variety = new();
+
+            using (var httpClient = new HttpClient())
+            {
+                using (var response = await httpClient.GetAsync(Const.APIEndPoint + $"Varieties"))
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var varieties = await response.Content.ReadAsStringAsync();
+                        var result = JsonConvert.DeserializeObject<BusinessResult>(varieties);
+
+                        if (result != null && result.Data != null)
+                        {
+                            var data = JsonConvert.DeserializeObject<List<Variety>>(result.Data.ToString());
+
+                            variety = data;
+                        }
+                    }
+                }
+            }
+
+            return variety;
+        }
+
+        // GET: Animals/Create
+        public async Task<IActionResult> Create()
+        {
+            var data = await this.GetVarieties();
+            ViewData["VarietyId"] = new SelectList(await this.GetVarieties(), "Id", "Name");
             return View();
         }
 
         // POST: Animals/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
+
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("AnimalName,VarietyId,Size,BirthDate,ImgLink,OwnerId,Weight,Description,HeathStatus,Gender,Id,CreatedBy,LastUpdatedBy,DeletedBy,CreatedTime,LastUpdatedTime,DeletedTime")] Animal animal)
+        public async Task<IActionResult> Create([Bind("Id,AnimalName,VarietyId,Size,BirthDate,ImgLink,OwnerId,Weight,Description,HeathStatus,Gender,Id,CreatedBy,LastUpdatedBy,DeletedBy,CreatedTime,LastUpdatedTime,DeletedTime")] Animal animal)
         {
+            bool saveStatus = false;
+
             if (ModelState.IsValid)
             {
-                _context.Add(animal);
-                await _context.SaveChangesAsync();
+                using (var httpClient = new HttpClient())
+                {
+                    using (var response =
+                           await httpClient.PostAsJsonAsync(Const.APIEndPoint + $"Animals", animal))
+                    {
+                        if (response.IsSuccessStatusCode)
+                        {
+                            var content = await response.Content.ReadAsStringAsync();
+                            var result = JsonConvert.DeserializeObject<BusinessResult>(content);
+
+                            if (result != null && result.Status == Const.SUCCESS_CREATE_CODE)
+                            {
+                                saveStatus = true;
+                            }
+                            else
+                            {
+                                saveStatus = false;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (saveStatus)
+            {
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["OwnerId"] = new SelectList(_context.Accounts, "Id", "Id", animal.OwnerId);
-            ViewData["VarietyId"] = new SelectList(_context.Varieties, "Id", "Id", animal.VarietyId);
-            return View(animal);
+            else
+            {
+                ViewData["VarietyId"] = new SelectList(await this.GetVarieties(), "Id", "Name");
+                return View(animal);
+            }
         }
 
         // GET: Animals/Edit/5

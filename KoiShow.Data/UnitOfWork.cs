@@ -15,6 +15,7 @@ public class UnitOfWork
     private PaymentRepository paymentRepository;
     private RegisterFormRepository registerFormRepository;
     private AnimalRepository animalRepository;
+    private VarietyRepository varietyRepository;
 
     public UnitOfWork()
     {
@@ -66,6 +67,11 @@ public class UnitOfWork
     public AnimalRepository AnimalRepository
     {
         get { return animalRepository ??= new AnimalRepository(context); }
+    }
+
+    public VarietyRepository VarietyRepository
+    {
+        get { return varietyRepository ??= new VarietyRepository(context); }
     }
 
     public async Task<List<PaymentDtoResponse>> GetAllPaymentsAsync()

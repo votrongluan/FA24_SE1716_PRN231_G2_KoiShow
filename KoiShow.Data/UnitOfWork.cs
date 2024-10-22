@@ -1,4 +1,6 @@
-﻿using KoiShow.Data.Models;
+﻿using KoiShow.Common.DTO.DTORequest;
+using KoiShow.Common.DTO.DtoResponse;
+using KoiShow.Data.Models;
 using KoiShow.Data.Repository;
 
 namespace KoiShow.Data;
@@ -66,3 +68,34 @@ public class UnitOfWork
         get { return animalRepository ??= new AnimalRepository(context); }
     }
 }   
+
+    public async Task<List<PaymentDtoResponse>> GetAllPaymentsAsync()
+    {
+        return await PPaymentRepository.GetAllPaymentsAsync();
+    }
+
+    public async Task<PaymentDtoResponse> CreatePaymentAsync(PaymentDto paymentDto)
+    {
+        return await PPaymentRepository.CreatePaymentAsync(paymentDto);
+    }
+
+    public async Task<PaymentDtoResponse> FindPaymentByIdAsync(int paymentId)
+    {
+        return await PPaymentRepository.FindPaymentByIdAsync(paymentId);
+    }
+
+    public async Task<List<PaymentDtoResponse>> FindPaymentsByStringAsync(string searchString)
+    {
+        return await PPaymentRepository.FindPaymentsByStringAsync(searchString);
+    }
+
+    public async Task<PaymentDtoResponse> UpdatePaymentStatusToPaidAsync(int paymentId)
+    {
+        return await PPaymentRepository.UpdatePaymentStatusToPaidAsync(paymentId);
+    }
+
+    public async Task<PaymentDtoResponse> CancelPaymentStatusAsync(int paymentId)
+    {
+        return await PPaymentRepository.CancelPaymentStatusAsync(paymentId);
+    }
+}

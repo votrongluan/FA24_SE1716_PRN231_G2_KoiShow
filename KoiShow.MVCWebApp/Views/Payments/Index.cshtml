@@ -1,4 +1,5 @@
-﻿@model IEnumerable<KoiShow.Data.Models.Payment>
+﻿@model PagedResult<KoiShow.Data.Models.Payment>
+@using KoiShow.MVCWebApp.Helpers
 
 @{
     ViewData["Title"] = "Index";
@@ -13,83 +14,102 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(Model => Model.Id)
+                @Html.DisplayNameFor(model => model.Items.First().Id)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.TransactionId)
+                @Html.DisplayNameFor(model => model.Items.First().TransactionId)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.PaymentAmount)
+                @Html.DisplayNameFor(model => model.Items.First().PaymentAmount)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.PaymentDate)
+                @Html.DisplayNameFor(model => model.Items.First().PaymentDate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.PaymentStatus)
+                @Html.DisplayNameFor(model => model.Items.First().PaymentStatus)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Description)
+                @Html.DisplayNameFor(model => model.Items.First().Description)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Vatrate)
+                @Html.DisplayNameFor(model => model.Items.First().Vatrate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ActualCost)
+                @Html.DisplayNameFor(model => model.Items.First().ActualCost)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.DiscountAmount)
+                @Html.DisplayNameFor(model => model.Items.First().DiscountAmount)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.FinalAmount)
+                @Html.DisplayNameFor(model => model.Items.First().FinalAmount)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Currency)
+                @Html.DisplayNameFor(model => model.Items.First().Currency)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TransactionId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PaymentAmount)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PaymentDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PaymentStatus)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Vatrate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ActualCost)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DiscountAmount)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FinalAmount)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Currency)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model.Items)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TransactionId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PaymentAmount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PaymentDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PaymentStatus)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Vatrate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ActualCost)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DiscountAmount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FinalAmount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Currency)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+
+<div>
+    <span>
+        @if (Model.CurrentPage > 1)
+        {
+            <a href="@Url.Action("Index", new { pageNumber = Model.CurrentPage - 1, pageSize = Model.PageSize })">← Previous</a>
+        }
+    </span>
+
+    <span>Page @Model.CurrentPage of @Model.TotalPages</span>
+
+    <span>
+        @if (Model.CurrentPage < Model.TotalPages)
+        {
+            <a href="@Url.Action("Index", new { pageNumber = Model.CurrentPage + 1, pageSize = Model.PageSize })">Next →</a>
+        }
+    </span>
+</div>

@@ -22,7 +22,7 @@ namespace KoiShow.MVCWebApp.Controllers
         }
 
         // GET: Animals
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder, int pageNumber = 1, int pageSize = 5, string searchTerm = "")
         {
             using (var httpClient = new HttpClient())
             {
@@ -37,7 +37,79 @@ namespace KoiShow.MVCWebApp.Controllers
                         {
                             var data = JsonConvert.DeserializeObject<List<Animal>>(result.Data.ToString());
 
-                            return View(data);
+                            if (!string.IsNullOrEmpty(searchTerm))
+                            {
+                                data = data.Where(x => x.AnimalName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
+                                    || x.Variety.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
+                                    || x.HeathStatus.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+                            }
+
+                            // Default sort order
+                            ViewBag.AnimalNameSortParam = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+                            ViewBag.SizeSortParam = sortOrder == "size_asc" ? "size_desc" : "size_asc";
+                            ViewBag.BirthDateSortParam = sortOrder == "birth_asc" ? "birth_desc" : "birth_asc";
+                            ViewBag.WeightSortParam = sortOrder == "weight_asc" ? "weight_desc" : "weight_asc";
+                            ViewBag.HeathStatusSortParam = sortOrder == "heath_asc" ? "heath_desc" : "heath_asc";
+                            ViewBag.GenderSortParam = sortOrder == "gender_asc" ? "gender_desc" : "gender_asc";
+                            ViewBag.VarietySortParam = sortOrder == "variety_asc" ? "variety_desc" : "variety_asc";
+
+                            // Sort data
+                            switch (sortOrder)
+                            {
+                                case "name_desc":
+                                    data = data.OrderByDescending(x => x.AnimalName).ToList();
+                                    break;
+                                case "size_asc":
+                                    data = data.OrderBy(x => x.Size).ToList();
+                                    break;
+                                case "size_desc":
+                                    data = data.OrderByDescending(x => x.Size).ToList();
+                                    break;
+                                case "birth_asc":
+                                    data = data.OrderBy(x => x.BirthDate).ToList();
+                                    break;
+                                case "birth_desc":
+                                    data = data.OrderByDescending(x => x.BirthDate).ToList();
+                                    break;
+                                case "weight_asc":
+                                    data = data.OrderBy(x => x.Weight).ToList();
+                                    break;
+                                case "weight_desc":
+                                    data = data.OrderByDescending(x => x.Weight).ToList();
+                                    break;
+                                case "heath_asc":
+                                    data = data.OrderBy(x => x.HeathStatus).ToList();
+                                    break;
+                                case "heath_desc":
+                                    data = data.OrderByDescending(x => x.HeathStatus).ToList();
+                                    break;
+                                case "gender_asc":
+                                    data = data.OrderBy(x => x.Gender).ToList();
+                                    break;
+                                case "gender_desc":
+                                    data = data.OrderByDescending(x => x.Gender).ToList();
+                                    break;
+                                case "variety_asc":
+                                    data = data.OrderBy(x => x.Variety.Name).ToList();
+                                    break;
+                                case "variety_desc":
+                                    data = data.OrderByDescending(x => x.Variety.Name).ToList();
+                                    break;
+                                default:
+                                    data = data.OrderBy(x => x.AnimalName).ToList();
+                                    break;
+                            }
+
+                            var totalResults = data.Count;
+                            var totalPages = (int)Math.Ceiling(totalResults / (double)pageSize);
+                            var pagedData = data.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+
+                            ViewBag.CurrentPage = pageNumber;
+                            ViewBag.TotalPages = totalPages;
+                            ViewBag.SearchTerm = searchTerm;
+                            ViewBag.PageSize = pageSize;
+
+                            return View(pagedData);
                         }
                     }
                 }
@@ -45,6 +117,7 @@ namespace KoiShow.MVCWebApp.Controllers
 
             return View(new List<Contest>());
         }
+
 
         // GET: Animals/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -161,13 +234,31 @@ namespace KoiShow.MVCWebApp.Controllers
                 return NotFound();
             }
 
-            var animal = await _context.Animals.FindAsync(id);
+            Animal animal = null;
+
+            using (var httpClient = new HttpClient())
+            {
+                using (var response = await httpClient.GetAsync(Const.APIEndPoint + $"Animals/{id}"))
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var content = await response.Content.ReadAsStringAsync();
+                        var result = JsonConvert.DeserializeObject<BusinessResult>(content);
+
+                        if (result != null && result.Data != null)
+                        {
+                            animal = JsonConvert.DeserializeObject<Animal>(result.Data.ToString());
+                        }
+                    }
+                }
+            }
+
             if (animal == null)
             {
                 return NotFound();
             }
-            ViewData["OwnerId"] = new SelectList(_context.Accounts, "Id", "Id", animal.OwnerId);
-            ViewData["VarietyId"] = new SelectList(_context.Varieties, "Id", "Id", animal.VarietyId);
+
+            ViewData["VarietyId"] = new SelectList(await this.GetVarieties(), "Id", "Name");
             return View(animal);
         }
 
@@ -176,36 +267,44 @@ namespace KoiShow.MVCWebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("AnimalName,VarietyId,Size,BirthDate,ImgLink,OwnerId,Weight,Description,HeathStatus,Gender,Id,CreatedBy,LastUpdatedBy,DeletedBy,CreatedTime,LastUpdatedTime,DeletedTime")] Animal animal)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,AnimalName,VarietyId,Size,BirthDate,ImgLink,OwnerId,Weight,Description,HeathStatus,Gender,Id,CreatedBy,LastUpdatedBy,DeletedBy,CreatedTime,LastUpdatedTime,DeletedTime")] Animal animal)
         {
-            if (id != animal.Id)
-            {
-                return NotFound();
-            }
+            bool saveStatus = false;
 
             if (ModelState.IsValid)
             {
-                try
+                using (var httpClient = new HttpClient())
                 {
-                    _context.Update(animal);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!AnimalExists(animal.Id))
+                    using (var response =
+                           await httpClient.PutAsJsonAsync(Const.APIEndPoint + $"Animals/{id}", animal))
                     {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
+                        if (response.IsSuccessStatusCode)
+                        {
+                            var content = await response.Content.ReadAsStringAsync();
+                            var result = JsonConvert.DeserializeObject<BusinessResult>(content);
+
+                            if (result != null && result.Status == Const.SUCCESS_UPDATE_CODE)
+                            {
+                                saveStatus = true;
+                            }
+                            else
+                            {
+                                saveStatus = false;
+                            }
+                        }
                     }
                 }
+            }
+
+            if (saveStatus)
+            {
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["OwnerId"] = new SelectList(_context.Accounts, "Id", "Id", animal.OwnerId);
-            ViewData["VarietyId"] = new SelectList(_context.Varieties, "Id", "Id", animal.VarietyId);
-            return View(animal);
+            else
+            {
+                ViewData["VarietyId"] = new SelectList(await this.GetVarieties(), "Id", "Name");
+                return View(animal);
+            }
         }
 
         // GET: Animals/Delete/5
@@ -216,10 +315,25 @@ namespace KoiShow.MVCWebApp.Controllers
                 return NotFound();
             }
 
-            var animal = await _context.Animals
-                .Include(a => a.Owner)
-                .Include(a => a.Variety)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            Animal animal = null;
+
+            using (var httpClient = new HttpClient())
+            {
+                using (var response = await httpClient.GetAsync(Const.APIEndPoint + $"Animals/{id}"))
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var content = await response.Content.ReadAsStringAsync();
+                        var result = JsonConvert.DeserializeObject<BusinessResult>(content);
+
+                        if (result != null && result.Data != null)
+                        {
+                            animal = JsonConvert.DeserializeObject<Animal>(result.Data.ToString());
+                        }
+                    }
+                }
+            }
+
             if (animal == null)
             {
                 return NotFound();
@@ -233,19 +347,41 @@ namespace KoiShow.MVCWebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var animal = await _context.Animals.FindAsync(id);
-            if (animal != null)
+            bool deleteStatus = false;
+
+            if (ModelState.IsValid)
             {
-                _context.Animals.Remove(animal);
+                using (var httpClient = new HttpClient())
+                {
+                    using (var response =
+                           await httpClient.DeleteAsync(Const.APIEndPoint + $"Animals/{id}"))
+                    {
+                        if (response.IsSuccessStatusCode)
+                        {
+                            var content = await response.Content.ReadAsStringAsync();
+                            var result = JsonConvert.DeserializeObject<BusinessResult>(content);
+
+                            if (result != null && result.Status == Const.SUCCESS_DELETE_CODE)
+                            {
+                                deleteStatus = true;
+                            }
+                            else
+                            {
+                                deleteStatus = false;
+                            }
+                        }
+                    }
+                }
             }
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool AnimalExists(int id)
-        {
-            return _context.Animals.Any(e => e.Id == id);
+            if (deleteStatus)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                return RedirectToAction(nameof(Delete));
+            }
         }
     }
 }

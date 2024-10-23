@@ -71,7 +71,7 @@ namespace KoiShow.Service
             try
             {
                 int result = -1;
-                var findAnimal = _unitOfWork.AnimalRepository.GetByIdAsync(animal.Id);
+                var findAnimal = await _unitOfWork.AnimalRepository.GetByIdAsync(animal.Id);
 
                 if (findAnimal != null)
                 {

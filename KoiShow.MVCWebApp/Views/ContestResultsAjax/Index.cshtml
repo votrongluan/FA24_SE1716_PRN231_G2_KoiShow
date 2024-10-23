@@ -189,8 +189,8 @@
                 data: JSON.stringify(contestData),
                 success: function (result) {
                     alert('Contest result saved successfully');
-                    $('#contestModal').modal('hide'); // Hide modal after save
-                    loadData(); // Reload table data
+                    $('#contestModal').modal('hide'); 
+                    loadData(); 
                 },
                 error: function (xhr, error) {
                     alert('Error: ' + xhr.statusText);

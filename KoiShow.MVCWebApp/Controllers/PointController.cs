@@ -17,12 +17,12 @@ namespace KoiShow.MVCWebApp.Controllers
             _context = context;
         }
 
-        // GET: ContestResults
-        public async Task<IActionResult> Index()
+        // GET: Animals
+        public async Task<IActionResult> Index(string sortOrder, int pageNumber = 1, int pageSize = 5, string searchTerm = "")
         {
             using (var httpClient = new HttpClient())
             {
-                using (var response = await httpClient.GetAsync(Const.APIEndPoint + $"Point"))
+                using (var response = await httpClient.GetAsync(Const.APIEndPoint + "Points"))
                 {
                     if (response.IsSuccessStatusCode)
                     {
@@ -31,28 +31,89 @@ namespace KoiShow.MVCWebApp.Controllers
 
                         if (result != null && result.Data != null)
                         {
-                            var data = JsonConvert.DeserializeObject<List<PointResponseDTO>>(result.Data.ToString());
+                            var data = JsonConvert.DeserializeObject<List<Point>>(result.Data.ToString());
 
-                            return View(data);
+                            if (!string.IsNullOrEmpty(searchTerm))
+                            {
+                                data = data.Where(x => x.Jury.FullName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
+                                    || x.RegisterForm.Animal.AnimalName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
+                                    || x.RegisterForm.Contest.ContestName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+                            }
+
+                            // Default sort order
+                            ViewBag.AnimalNameSortParam = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+                            ViewBag.ShapePointSortParam = sortOrder == "shape_asc" ? "shape_desc" : "shape_asc";
+                            ViewBag.ColorPointSortParam = sortOrder == "color_asc" ? "color_desc" : "color_asc";
+                            ViewBag.PatternPointSortParam = sortOrder == "pattern_asc" ? "pattern_desc" : "pattern_asc";
+                            ViewBag.TotalPointSortParam = sortOrder == "total_asc" ? "total_desc" : "total_asc";
+                            ViewBag.JudgeRankSortParam = sortOrder == "judge_asc" ? "judge_desc" : "judge_asc";
+
+                            // Sort data
+                            switch (sortOrder)
+                            {
+                                case "name_desc":
+                                    data = data.OrderByDescending(x => x.RegisterForm.Animal.AnimalName).ToList();
+                                    break;
+                                case "shape_asc":
+                                    data = data.OrderBy(x => x.ShapePoint).ToList();
+                                    break;
+                                case "shape_desc":
+                                    data = data.OrderByDescending(x => x.ShapePoint).ToList();
+                                    break;
+                                case "color_asc":
+                                    data = data.OrderBy(x => x.ColorPoint).ToList();
+                                    break;
+                                case "color_desc":
+                                    data = data.OrderByDescending(x => x.ColorPoint).ToList();
+                                    break;
+                                case "pattern_asc":
+                                    data = data.OrderBy(x => x.PatternPoint).ToList();
+                                    break;
+                                case "pattern_desc":
+                                    data = data.OrderByDescending(x => x.PatternPoint).ToList();
+                                    break;
+                                case "total_asc":
+                                    data = data.OrderBy(x => x.TotalScore).ToList();
+                                    break;
+                                case "total_desc":
+                                    data = data.OrderByDescending(x => x.TotalScore).ToList();
+                                    break;
+                                case "judge_asc":
+                                    data = data.OrderBy(x => x.JudgeRank).ToList();
+                                    break;
+                                case "judge_desc":
+                                    data = data.OrderByDescending(x => x.JudgeRank).ToList();
+                                    break;
+                                default:
+                                    data = data.OrderBy(x => x.RegisterForm.Animal.AnimalName).ToList();
+                                    break;
+                            }
+
+                            var totalResults = data.Count;
+                            var totalPages = (int)Math.Ceiling(totalResults / (double)pageSize);
+                            var pagedData = data.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+
+                            ViewBag.CurrentPage = pageNumber;
+                            ViewBag.TotalPages = totalPages;
+                            ViewBag.SearchTerm = searchTerm;
+                            ViewBag.PageSize = pageSize;
+
+                            return View(pagedData);
                         }
                     }
                 }
             }
 
-            return View(new List<ContestResult>());
+            return View(new List<Contest>());
         }
 
-        // GET: ContestResults/Details/5
+
+        // GET: Animals/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             using (var httpClient = new HttpClient())
             {
-                using (var response = await httpClient.GetAsync(Const.APIEndPoint + $"Point/{id}"))
+                using (var response = await httpClient.GetAsync(Const.APIEndPoint + "Points/" + id))
                 {
                     if (response.IsSuccessStatusCode)
                     {
@@ -61,57 +122,60 @@ namespace KoiShow.MVCWebApp.Controllers
 
                         if (result != null && result.Data != null)
                         {
-                            var data = JsonConvert.DeserializeObject<PointResponseDTO>(result.Data.ToString());
+                            var data = JsonConvert.DeserializeObject<Animal>(result.Data.ToString());
 
                             return View(data);
                         }
                     }
                 }
             }
-
-            return NotFound();
+            return View(new Animal());
         }
 
-        public async Task<List<PointResponseDTO>> GetContest()
+        public async Task<List<RegisterForm>> RegisterForms()
         {
-            List<PointResponseDTO> points = new();
+            List<Contest> contests = new();
 
             using (var httpClient = new HttpClient())
             {
-                using (var response = await httpClient.GetAsync(Const.APIEndPoint + $"Point"))
+                using (var response = await httpClient.GetAsync(Const.APIEndPoint + $"RegisterForm"))
                 {
                     if (response.IsSuccessStatusCode)
                     {
-                        var content = await response.Content.ReadAsStringAsync();
-                        var result = JsonConvert.DeserializeObject<BusinessResult>(content);
+                        var tmpContests = await response.Content.ReadAsStringAsync();
+                        var result = JsonConvert.DeserializeObject<BusinessResult>(tmpContests);
 
                         if (result != null && result.Data != null)
                         {
-                            var data = JsonConvert.DeserializeObject<List<PointResponseDTO>>(result.Data.ToString());
+                            var data = JsonConvert.DeserializeObject<List<Contest>>(result.Data.ToString());
 
-                            points = data;
+                            contests = data;
                         }
                     }
                 }
             }
 
-            return points;
+            return contests;
         }
 
-        // GET: ContestResults/Create
+        // GET: Animals/Create
         public async Task<IActionResult> Create()
         {
-            var data = await this.GetContest();
-            ViewData["ContestId"] = new SelectList(await this.GetContest(), "Id", "ContestName");
+            var data = await this.GetVarieties();
+            ViewData["VarietyId"] = new SelectList(await this.GetVarieties(), "Id", "Name");
             return View();
         }
 
-        // POST: ContestResults/Create
+        // POST: Animals/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
+
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ContestResultId,ContestId,ContestResultName,ContestResultDescription,TotalScore,Rank,Comments,IsFinalized,IsPublished,Category,Status,Prize,PrizeDescription")] ContestResult contestResult)
+        public async Task<IActionResult> Create([Bind("Id,AnimalName,VarietyId,Size,BirthDate,ImgLink,OwnerId,Weight,Description,HeathStatus,Gender,Id,CreatedBy,LastUpdatedBy,DeletedBy,CreatedTime,LastUpdatedTime,DeletedTime")] Animal animal)
         {
             bool saveStatus = false;
 
@@ -120,7 +184,7 @@ namespace KoiShow.MVCWebApp.Controllers
                 using (var httpClient = new HttpClient())
                 {
                     using (var response =
-                           await httpClient.PostAsJsonAsync(Const.APIEndPoint + $"ContestResults", contestResult))
+                           await httpClient.PostAsJsonAsync(Const.APIEndPoint + $"Animals", animal))
                     {
                         if (response.IsSuccessStatusCode)
                         {
@@ -146,12 +210,12 @@ namespace KoiShow.MVCWebApp.Controllers
             }
             else
             {
-                ViewData["ContestId"] = new SelectList(_context.Contests, "ContestId", "ContestName", contestResult.ContestId);
-                return View(contestResult);
+                ViewData["VarietyId"] = new SelectList(await this.GetVarieties(), "Id", "Name");
+                return View(animal);
             }
         }
 
-        // GET: ContestResults/Edit/5
+        // GET: Animals/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -159,11 +223,11 @@ namespace KoiShow.MVCWebApp.Controllers
                 return NotFound();
             }
 
-            ContestResult contestResult = null;
+            Animal animal = null;
 
             using (var httpClient = new HttpClient())
             {
-                using (var response = await httpClient.GetAsync(Const.APIEndPoint + $"ContestResults/{id}"))
+                using (var response = await httpClient.GetAsync(Const.APIEndPoint + $"Animals/{id}"))
                 {
                     if (response.IsSuccessStatusCode)
                     {
@@ -172,27 +236,27 @@ namespace KoiShow.MVCWebApp.Controllers
 
                         if (result != null && result.Data != null)
                         {
-                            contestResult = JsonConvert.DeserializeObject<ContestResult>(result.Data.ToString());
+                            animal = JsonConvert.DeserializeObject<Animal>(result.Data.ToString());
                         }
                     }
                 }
             }
 
-            if (contestResult == null)
+            if (animal == null)
             {
                 return NotFound();
             }
 
-            ViewData["ContestId"] = new SelectList(await this.GetContest(), "Id", "ContestName", contestResult.ContestId);
-            return View(contestResult);
+            ViewData["VarietyId"] = new SelectList(await this.GetVarieties(), "Id", "Name");
+            return View(animal);
         }
 
-        // POST: ContestResults/Edit/5
+        // POST: Animals/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ContestResultId,ContestId,ContestResultName,ContestResultDescription,TotalScore,Rank,Comments,IsFinalized,IsPublished,Category,Status,Prize,PrizeDescription")] ContestResult contestResult)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,AnimalName,VarietyId,Size,BirthDate,ImgLink,OwnerId,Weight,Description,HeathStatus,Gender,Id,CreatedBy,LastUpdatedBy,DeletedBy,CreatedTime,LastUpdatedTime,DeletedTime")] Animal animal)
         {
             bool saveStatus = false;
 
@@ -201,7 +265,7 @@ namespace KoiShow.MVCWebApp.Controllers
                 using (var httpClient = new HttpClient())
                 {
                     using (var response =
-                           await httpClient.PutAsJsonAsync(Const.APIEndPoint + $"ContestResults/{id}", contestResult))
+                           await httpClient.PutAsJsonAsync(Const.APIEndPoint + $"Animals/{id}", animal))
                     {
                         if (response.IsSuccessStatusCode)
                         {
@@ -227,12 +291,12 @@ namespace KoiShow.MVCWebApp.Controllers
             }
             else
             {
-                ViewData["ContestId"] = new SelectList(_context.Contests, "ContestId", "ContestName", contestResult.ContestId);
-                return View(contestResult);
+                ViewData["VarietyId"] = new SelectList(await this.GetVarieties(), "Id", "Name");
+                return View(animal);
             }
         }
 
-        // GET: ContestResults/Delete/5
+        // GET: Animals/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -240,11 +304,11 @@ namespace KoiShow.MVCWebApp.Controllers
                 return NotFound();
             }
 
-            ContestResult contestResult = null;
+            Animal animal = null;
 
             using (var httpClient = new HttpClient())
             {
-                using (var response = await httpClient.GetAsync(Const.APIEndPoint + $"ContestResults/{id}"))
+                using (var response = await httpClient.GetAsync(Const.APIEndPoint + $"Animals/{id}"))
                 {
                     if (response.IsSuccessStatusCode)
                     {
@@ -253,21 +317,21 @@ namespace KoiShow.MVCWebApp.Controllers
 
                         if (result != null && result.Data != null)
                         {
-                            contestResult = JsonConvert.DeserializeObject<ContestResult>(result.Data.ToString());
+                            animal = JsonConvert.DeserializeObject<Animal>(result.Data.ToString());
                         }
                     }
                 }
             }
 
-            if (contestResult == null)
+            if (animal == null)
             {
                 return NotFound();
             }
 
-            return View(contestResult);
+            return View(animal);
         }
 
-        // POST: ContestResults/Delete/5
+        // POST: Animals/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -279,7 +343,7 @@ namespace KoiShow.MVCWebApp.Controllers
                 using (var httpClient = new HttpClient())
                 {
                     using (var response =
-                           await httpClient.DeleteAsync(Const.APIEndPoint + $"ContestResults/{id}"))
+                           await httpClient.DeleteAsync(Const.APIEndPoint + $"Animals/{id}"))
                     {
                         if (response.IsSuccessStatusCode)
                         {

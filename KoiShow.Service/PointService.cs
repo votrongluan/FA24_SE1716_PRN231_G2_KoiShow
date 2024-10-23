@@ -14,49 +14,29 @@ namespace KoiShow.Service
     public interface IPointService
     {
         Task<IBusinessResult> GetAll();
-
         Task<IBusinessResult> GetById(int id);
+        Task<IBusinessResult> Save(Point point);
+        Task<IBusinessResult> DeleteById(int id);
 
-        Task<IBusinessResult> Save(PointUpdateRequestDTO point);
-
-        Task<IBusinessResult> Delete(int id);
-
-        Task<IBusinessResult> Create(PointCreateRequestDTO point);
     }
+
     public class PointService : IPointService
     {
         private readonly UnitOfWork _unitOfWork;
 
         public PointService()
         {
-            _unitOfWork = new UnitOfWork();
+            _unitOfWork ??= new UnitOfWork();
         }
 
         public async Task<IBusinessResult> GetAll()
         {
-            var points = await _unitOfWork.PointRepository.GetAllAsync();
+            #region Business Rule
 
-            var result = new List<PointResponseDTO>();
+            #endregion
 
-            foreach (var point in points)
-            {
-                if (point.DeletedTime == null)
-                {
-                    result.Add(new PointResponseDTO
-                    {
-                        Id = point.Id,
-                        ShapePoint = point.ShapePoint,
-                        ColorPoint = point.ColorPoint,
-                        PatternPoint = point.PatternPoint,
-                        Comment = point.Comment,
-                        PointStatus = point.PointStatus,
-                        JudgeRank = point.JudgeRank,
-                        JuryId = point.JuryId,
-                        Penalties = point.Penalties,
-                        RegisterFormId = point.RegisterFormId
-                    });
-                }
-            }
+
+            var points = await _unitOfWork.PointRepository.GetAllWithIncludeAsync(a => a.RegisterForm, a => a.Jury);
 
             if (points == null)
             {
@@ -64,133 +44,51 @@ namespace KoiShow.Service
             }
             else
             {
-                return new BusinessResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, result);
+                return new BusinessResult(Const.SUCCESS_CREATE_CODE, Const.SUCCESS_CREATE_MSG, points);
             }
         }
 
         public async Task<IBusinessResult> GetById(int id)
         {
-            var point = await _unitOfWork.PointRepository.GetByIdAsync(id);
+            #region Business Rule
 
-            if (point == null)
+            #endregion
+
+
+            var animals = (await _unitOfWork.PointRepository.GetAllWithIncludeAsync(a => a.RegisterForm, a => a.Jury)).Where(e => e.Id == id).FirstOrDefault();
+
+            if (animals == null)
             {
-                return new BusinessResult(Const.WARNING_NO_DATA_CODE, Const.WARNING_NO_DATA_MSG, new List<Point>());
+                return new BusinessResult(Const.WARNING_NO_DATA_CODE, Const.WARNING_NO_DATA_MSG, new List<Animal>());
             }
             else
             {
-                var result = new PointResponseDTO
-                {
-                    Id = point.Id,
-                    ShapePoint = point.ShapePoint,
-                    ColorPoint = point.ColorPoint,
-                    PatternPoint = point.PatternPoint,
-                    Comment = point.Comment,
-                    PointStatus = point.PointStatus,
-                    JudgeRank = point.JudgeRank,
-                    JuryId = point.JuryId,
-                    Penalties = point.Penalties,
-                    RegisterFormId = point.RegisterFormId
-                };
-                
-                return new BusinessResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, result);
+                return new BusinessResult(Const.SUCCESS_CREATE_CODE, Const.SUCCESS_CREATE_MSG, animals);
             }
         }
 
-        public async Task<IBusinessResult> Save(PointUpdateRequestDTO point)
+        public async Task<IBusinessResult> Save(Point point)
         {
             try
             {
                 int result = -1;
-                var pointTmp = await _unitOfWork.PointRepository.GetByIdAsync(point.Id);
+                var findPoint = await _unitOfWork.PointRepository.GetByIdAsync(point.Id);
 
-                if (pointTmp != null)
+                if (findPoint != null)
                 {
-                    var newPoint = new Point
-                    {
-                        Id = point.Id,
-                         ShapePoint = point.ShapePoint,
-                        ColorPoint = point.ColorPoint,
-                        PatternPoint = point.PatternPoint,
-                        Comment = point.Comment,
-                        JuryId = point.JuryId,
-                        RegisterFormId = point.RegisterFormId,
-                        PointStatus = point.PointStatus,
-                        JudgeRank = point.JudgeRank,
-                        Penalties = point.Penalties,
-                    };
-
-                    result = await _unitOfWork.PointRepository.UpdateAsync(newPoint);
+                    result = await _unitOfWork.PointRepository.UpdateAsync(point);
 
                     if (result > 0)
                     {
-                        return new BusinessResult(Const.SUCCESS_UPDATE_CODE, Const.SUCCESS_UPDATE_MSG, point);
+                        return new BusinessResult(Const.SUCCESS_UPDATE_CODE, Const.SUCCESS_UPDATE_MSG, findPoint);
                     }
                     else
                     {
                         return new BusinessResult(Const.FAIL_UPDATE_CODE, Const.FAIL_UPDATE_MSG, new List<Point>());
                     }
                 }
-                else
-                {
-                    return new BusinessResult(Const.WARNING_NO_DATA_CODE, Const.WARNING_NO_DATA_MSG, new List<Point>());
-                }
-            }
-            catch (Exception ex)
-            {
-                return new BusinessResult(Const.ERROR_EXCEPTION, ex.Message);
-            }
-        }
 
-        public async Task<IBusinessResult> Delete(int id)
-        {
-            try
-            {
-
-                var point = await _unitOfWork.PointRepository.GetByIdAsync(id);
-
-                if (point != null)
-                {
-                    point.DeletedTime = DateTime.UtcNow;
-                    var result = await _unitOfWork.PointRepository.RemoveAsync(point);
-
-                    if (result)
-                    {
-                        return new BusinessResult(Const.SUCCESS_DELETE_CODE, Const.SUCCESS_DELETE_MSG, new List<Point>());
-                    }
-                    else
-                    {
-                        return new BusinessResult(Const.FAIL_DELETE_CODE, Const.FAIL_DELETE_MSG, new List<Point>());
-                    }
-                }
-                else
-                {
-                    return new BusinessResult(Const.WARNING_NO_DATA_CODE, Const.WARNING_NO_DATA_MSG, new List<Point>());
-                }
-            }
-            catch (Exception ex)
-            {
-                return new BusinessResult(Const.ERROR_EXCEPTION, ex.Message);
-            }
-        }
-
-        public async Task<IBusinessResult> Create(PointCreateRequestDTO point)
-        {
-            try
-            {
-                var newPoint = new Point{
-                    ShapePoint = point.ShapePoint,
-                    ColorPoint = point.ColorPoint,
-                    PatternPoint = point.PatternPoint,
-                    Comment = point.Comment,
-                    JuryId = point.JuryId,
-                    RegisterFormId = point.RegisterFormId,
-                    PointStatus = point.PointStatus,
-                    JudgeRank = point.JudgeRank,
-                    Penalties = point.Penalties
-                };
-                
-
-                var result = await _unitOfWork.PointRepository.CreateAsync(newPoint);
+                result = await _unitOfWork.PointRepository.CreateAsync(point);
 
                 if (result > 0)
                 {
@@ -203,7 +101,40 @@ namespace KoiShow.Service
             }
             catch (Exception ex)
             {
-                return new BusinessResult(Const.ERROR_EXCEPTION, ex.Message);
+                return new BusinessResult(Const.ERROR_EXCEPTION, ex.ToString());
+            }
+        }
+
+        public async Task<IBusinessResult> DeleteById(int id)
+        {
+            #region Business Rule
+
+            #endregion
+            try
+            {
+                var points = await _unitOfWork.PointRepository.GetByIdAsync(id);
+
+                if (points == null)
+                {
+                    return new BusinessResult(Const.WARNING_NO_DATA_CODE, Const.WARNING_NO_DATA_MSG, new List<Point>());
+                }
+                else
+                {
+                    var result = await _unitOfWork.PointRepository.RemoveAsync(points);
+
+                    if (result)
+                    {
+                        return new BusinessResult(Const.SUCCESS_DELETE_CODE, Const.SUCCESS_DELETE_MSG, points);
+                    }
+                    else
+                    {
+                        return new BusinessResult(Const.FAIL_DELETE_CODE, Const.FAIL_DELETE_MSG, points);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return new BusinessResult(Const.ERROR_EXCEPTION, ex.ToString());
             }
         }
     }

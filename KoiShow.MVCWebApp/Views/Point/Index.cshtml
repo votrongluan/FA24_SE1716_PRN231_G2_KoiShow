@@ -1,0 +1,90 @@
+﻿@model IEnumerable<KoiShow.Data.Models.Point>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RegisterFormId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ShapePoint)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ColorPoint)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PatternPoint)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Comment)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.JuryId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PointStatus)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.JudgeRank)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Penalties)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RegisterFormId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ShapePoint)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ColorPoint)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PatternPoint)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Comment)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.JuryId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PointStatus)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.JudgeRank)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Penalties)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

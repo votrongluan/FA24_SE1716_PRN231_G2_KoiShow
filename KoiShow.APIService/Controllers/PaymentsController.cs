@@ -23,15 +23,16 @@ namespace KoiShow.API.Service.Controllers
         private readonly PaymentService _paymentService;
         public PaymentsController(PaymentService paymentService) => _paymentService = paymentService;
 
-        // POST: api/Payments/create
-        [HttpPost("create")]
-        public async Task<IBusinessResult> CreatePayment([FromBody] PaymentDto paymentDto)
+        // POST: api/Payments/create-and-generate-url
+        [HttpPost("create-and-generate-url")]
+        public async Task<IActionResult> CreatePaymentAndGenerateUrl([FromBody] PaymentDto paymentDto)
         {
-            return await _paymentService.CreatePayment(paymentDto);
+            var result = await _paymentService.CreatePaymentAndGenerateUrl(paymentDto, HttpContext);
+            return Ok(result);
         }
 
         //GET: api/Payments
-       [HttpGet]
+        [HttpGet]
         public async Task<IBusinessResult> GetAllPaymentsAsync()
         {
             return await _paymentService.GetAllPaymentsAsync();

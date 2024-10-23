@@ -4,6 +4,7 @@ using KoiShow.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KoiShow.Data.Migrations
 {
     [DbContext(typeof(FA24_SE1716_PRN231_G2_KoiShowContext))]
-    partial class FA24_SE1716_PRN231_G2_KoiShowContextModelSnapshot : ModelSnapshot
+    [Migration("20241023004832_add-order-type-payment")]
+    partial class addordertypepayment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

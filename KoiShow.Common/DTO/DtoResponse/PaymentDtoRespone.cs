@@ -32,8 +32,12 @@ namespace KoiShow.Common.DTO.DtoResponse
 
         public DateTime? CreatedTime { get; set; }
 
+        public bool Success { get; set; }
+
         public int? LastUpdatedBy { get; set; }
 
         public DateTime? LastUpdatedTime { get; set; }
+        public string Token { get; set; }
+        public string VnPayResponseCode { get; set; }
     }
 }

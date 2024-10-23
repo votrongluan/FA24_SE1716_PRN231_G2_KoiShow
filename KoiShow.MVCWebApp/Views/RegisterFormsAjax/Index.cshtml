@@ -1,0 +1,153 @@
+﻿<div class="row">
+    <div class="col-md-10">
+        <h3 class="display-8">Register Forms List</h3>
+    </div>
+    <div class="col-md-2 text-end">
+        <button type="button" class="btn btn-primary" onclick="addRegisterForm();">
+            Add
+        </button>
+    </div>
+</div>
+
+<!-- Modal for adding new Register Form -->
+<div class="modal fade" id="registerFormModal" tabindex="-1" aria-labelledby="registerFormModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frm", id = "frm" }))
+            {
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <h5 class="modal-title" id="registerFormModalLabel">Add New Register Form</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="registerFormModalContent"></div>
+                    <!-- Add input fields corresponding to Register Forms here -->
+                    <div class="form-group">
+                        <label for="entryTitle">Entry Title</label>
+                        <input type="text" class="form-control" id="entryTitle" name="entryTitle" />
+                    </div>
+                    <div class="form-group">
+                        <label for="checkinStatus">Check-in Status</label>
+                        <input type="text" class="form-control" id="checkinStatus" name="checkinStatus" />
+                    </div>
+                    <div class="form-group">
+                        <label for="registrationDate">Registration Date</label>
+                        <input type="date" class="form-control" id="registrationDate" name="registrationDate" />
+                    </div>
+                    <div class="form-group">
+                        <label for="approvalStatus">Approval Status</label>
+                        <input type="text" class="form-control" id="approvalStatus" name="approvalStatus" />
+                    </div>
+                    <div class="form-group">
+                        <label for="notes">Notes</label>
+                        <textarea class="form-control" id="notes" name="notes"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="status">Status</label>
+                        <input type="number" class="form-control" id="status" name="status" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="btSave" type="button" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <table class="table table-striped table-bordered table-hover">
+            <thead>
+                <tr class="card-header">
+                    <th class="card-title text-center">Entry Title</th>
+                    <th class="card-title text-center">Check-in Status</th>
+                    <th class="card-title text-center">Registration Date</th>
+                    <th class="card-title text-center">Approval Status</th>
+                    <th class="card-title text-center">Notes</th>
+                    <th class="card-title text-center">Status</th>
+                    <th class="card-title text-center"></th>
+                </tr>
+            </thead>
+            <tbody class="tblRegisterFormsAjax">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            loadRegisterForms();
+        });
+
+        function loadRegisterForms() {
+            $.ajax({
+                url: 'https://localhost:7046/api/RegisterForms',  // Updated API URL
+                type: "GET",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    var html = '';
+                    $.each(result.data, function (key, item) {
+                        html += '<tr>';
+                        html += '<td>' + item.entryTitle + '</td>';
+                        html += '<td>' + item.checkinStatus + '</td>';
+                        html += '<td>' + item.registrationDate + '</td>';
+                        html += '<td>' + item.approvalStatus + '</td>';
+                        html += '<td>' + item.notes + '</td>';
+                        html += '<td>' + item.status + '</td>';
+                        html += '<td></td>'; // Add actions (Edit/Delete) if needed
+                        html += '</tr>';
+                    });
+                    $('.tblRegisterFormsAjax').html(html);
+                },
+                error: function (xhr, error) {
+                    alert(xhr.statusText);
+                }
+            });
+        }
+
+        function addRegisterForm() {
+            // Clear the input fields before showing the modal
+            $('#entryTitle').val('');
+            $('#checkinStatus').val('');
+            $('#registrationDate').val('');
+            $('#approvalStatus').val('');
+            $('#notes').val('');
+            $('#status').val('');
+
+            // Show the modal
+            $('#registerFormModal').modal('show');
+        }
+
+        $("#btSave").click(function () {
+            var registerFormData = {
+                entryTitle: $("#entryTitle").val(),
+                checkinStatus: $("#checkinStatus").val(),
+                registrationDate: $("#registrationDate").val(),
+                approvalStatus: $("#approvalStatus").val(),
+                notes: $("#notes").val(),
+                status: $("#status").val(),
+            };
+
+            $.ajax({
+                url: 'https://localhost:7046/api/RegisterForms',  // Endpoint for creating a new register form
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(registerFormData),
+                success: function (response) {
+                    // Optionally show a success message or handle the response
+                    alert("Register form added successfully!");
+                    $('#registerFormModal').modal('hide'); // Hide the modal
+                    loadRegisterForms(); // Refresh the list
+                },
+                error: function (xhr, status, error) {
+                    alert("Error adding register form: " + error);
+                }
+            });
+        });
+    </script>
+}

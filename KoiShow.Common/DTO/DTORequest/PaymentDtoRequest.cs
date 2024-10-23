@@ -15,7 +15,7 @@ namespace KoiShow.Common.DTO.DTORequest
         public DateTime PaymentDate { get; set; }
         public string PaymentStatus { get; set; }
         public string Description { get; set; }
-        public double FinalAmount { get; set; }
         public string Currency { get; set; }
+        public string OrderType { get; set; }
     }
 }

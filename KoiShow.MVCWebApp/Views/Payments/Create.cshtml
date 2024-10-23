@@ -4,69 +4,70 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
-
-<h4>Payment</h4>
+<h1>Create Payment</h1>
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <!-- RegisterFormId -->
             <div class="form-group">
-                <label asp-for="RegisterFormId" class="control-label"></label>
-                <input asp-for="RegisterFormId" class="form-control" />
+                <label asp-for="RegisterFormId" class="control-label">Register Form ID</label>
+                <input asp-for="RegisterFormId" class="form-control" placeholder="Enter Register Form ID" />
                 <span asp-validation-for="RegisterFormId" class="text-danger"></span>
             </div>
+
+            <!-- TransactionId -->
             <div class="form-group">
-                <label asp-for="TransactionId" class="control-label"></label>
-                <input asp-for="TransactionId" class="form-control" />
+                <label asp-for="TransactionId" class="control-label">Transaction ID</label>
+                <input asp-for="TransactionId" class="form-control" placeholder="Enter Transaction ID" />
                 <span asp-validation-for="TransactionId" class="text-danger"></span>
             </div>
+
+            <!-- PaymentAmount -->
             <div class="form-group">
-                <label asp-for="PaymentAmount" class="control-label"></label>
-                <input asp-for="PaymentAmount" class="form-control" />
+                <label asp-for="PaymentAmount" class="control-label">Payment Amount (VND)</label>
+                <input asp-for="PaymentAmount" type="number" class="form-control" placeholder="Enter Payment Amount" />
                 <span asp-validation-for="PaymentAmount" class="text-danger"></span>
             </div>
+
+            <!-- PaymentDate -->
             <div class="form-group">
-                <label asp-for="PaymentDate" class="control-label"></label>
-                <input asp-for="PaymentDate" class="form-control" />
+                <label asp-for="PaymentDate" class="control-label">Payment Date</label>
+                <input asp-for="PaymentDate" type="datetime-local" class="form-control" />
                 <span asp-validation-for="PaymentDate" class="text-danger"></span>
             </div>
+
+            <!-- PaymentStatus -->
             <div class="form-group">
-                <label asp-for="PaymentStatus" class="control-label"></label>
-                <input asp-for="PaymentStatus" class="form-control" />
+                <label asp-for="PaymentStatus" class="control-label">Payment Status</label>
+                <input asp-for="PaymentStatus" class="form-control" placeholder="Enter Payment Status" />
                 <span asp-validation-for="PaymentStatus" class="text-danger"></span>
             </div>
+
+            <!-- Description -->
             <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
+                <label asp-for="Description" class="control-label">Description</label>
+                <input asp-for="Description" class="form-control" placeholder="Enter Payment Description" />
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
+
+            <!-- Currency -->
             <div class="form-group">
-                <label asp-for="Vatrate" class="control-label"></label>
-                <input asp-for="Vatrate" class="form-control" />
-                <span asp-validation-for="Vatrate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ActualCost" class="control-label"></label>
-                <input asp-for="ActualCost" class="form-control" />
-                <span asp-validation-for="ActualCost" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DiscountAmount" class="control-label"></label>
-                <input asp-for="DiscountAmount" class="form-control" />
-                <span asp-validation-for="DiscountAmount" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FinalAmount" class="control-label"></label>
-                <input asp-for="FinalAmount" class="form-control" />
-                <span asp-validation-for="FinalAmount" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Currency" class="control-label"></label>
-                <input asp-for="Currency" class="form-control" />
+                <label asp-for="Currency" class="control-label">Currency</label>
+                <input asp-for="Currency" class="form-control" readonly value="VND" />
                 <span asp-validation-for="Currency" class="text-danger"></span>
             </div>
+
+            <!-- OrderType -->
+            <div class="form-group">
+                <label asp-for="OrderType" class="control-label">Order Type</label>
+                <input asp-for="OrderType" class="form-control" readonly value="Thanh toán trực tuyến" />
+                <span asp-validation-for="OrderType" class="text-danger"></span>
+            </div>
+
+            <!-- Submit Button -->
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
@@ -75,9 +76,10 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @Html.Partial("_ValidationScriptsPartial")
 }
+

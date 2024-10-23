@@ -22,7 +22,7 @@ namespace KoiShow.MVCWebApp.Controllers
         }
 
         // GET: Animals
-        public async Task<IActionResult> Index(string sortOrder, int pageNumber = 1, int pageSize = 5, string searchTerm = "")
+        public async Task<IActionResult> Index(string sortOrder, int pageNumber = 1, int pageSize = 4, string searchTerm = "")
         {
             using (var httpClient = new HttpClient())
             {
@@ -181,12 +181,10 @@ namespace KoiShow.MVCWebApp.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
 
-
-
-
+        // POST: Animals/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,AnimalName,VarietyId,Size,BirthDate,ImgLink,OwnerId,Weight,Description,HeathStatus,Gender,Id,CreatedBy,LastUpdatedBy,DeletedBy,CreatedTime,LastUpdatedTime,DeletedTime")] Animal animal)
+        public async Task<IActionResult> Create([Bind("Id,AnimalName,VarietyId,Size,BirthDate,ImgLink,OwnerId,Weight,Description,HeathStatus,Gender")] Animal animal)
         {
             bool saveStatus = false;
 
@@ -194,8 +192,7 @@ namespace KoiShow.MVCWebApp.Controllers
             {
                 using (var httpClient = new HttpClient())
                 {
-                    using (var response =
-                           await httpClient.PostAsJsonAsync(Const.APIEndPoint + $"Animals", animal))
+                    using (var response = await httpClient.PostAsJsonAsync(Const.APIEndPoint + "Animals", animal))
                     {
                         if (response.IsSuccessStatusCode)
                         {
@@ -205,10 +202,6 @@ namespace KoiShow.MVCWebApp.Controllers
                             if (result != null && result.Status == Const.SUCCESS_CREATE_CODE)
                             {
                                 saveStatus = true;
-                            }
-                            else
-                            {
-                                saveStatus = false;
                             }
                         }
                     }
@@ -225,6 +218,7 @@ namespace KoiShow.MVCWebApp.Controllers
                 return View(animal);
             }
         }
+
 
         // GET: Animals/Edit/5
         public async Task<IActionResult> Edit(int? id)

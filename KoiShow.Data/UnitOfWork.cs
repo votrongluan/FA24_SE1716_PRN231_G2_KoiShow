@@ -59,7 +59,7 @@ public class UnitOfWork
         get { return paymentRepository ??= new PaymentRepository(context); }
     }
 
-    public RegisterFormRepository RRegisterFormRepository
+    public RegisterFormRepository RegisterFormRepository
     {
         get { return registerFormRepository ??= new RegisterFormRepository(context); }
     }

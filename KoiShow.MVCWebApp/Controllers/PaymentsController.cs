@@ -10,6 +10,10 @@ using KoiShow.Common;
 using Newtonsoft.Json;
 using KoiShow.Service.Base;
 using KoiShow.MVCWebApp.Helpers;
+using KoiShow.Common.DTO.DTORequest;
+using KoiShow.Common.DTO.DtoResponse;
+using System.Net.Http;
+using System.Text;
 
 namespace KoiShow.MVCWebApp.Controllers
 {
@@ -21,57 +25,6 @@ namespace KoiShow.MVCWebApp.Controllers
         {
             _context = context;
         }
-
-        // GET: Payments
-        //public async Task<IActionResult> Index()
-        //{
-        //    using (var httpClient = new HttpClient())
-        //    {
-        //        using (var response = await httpClient.GetAsync(Const.APIEndPoint + "Payments"))
-        //        {
-        //            if (response.IsSuccessStatusCode)
-        //            {
-        //                var content = await response.Content.ReadAsStringAsync();
-        //                var result = JsonConvert.DeserializeObject<BusinessResult>(content);
-
-        //                if (result != null && result.Data != null)
-        //                {
-        //                    var data = JsonConvert.DeserializeObject<List<Payment>>(result.Data.ToString());
-
-        //                    return View(data);
-        //                }
-        //            }
-        //        }
-        //    }
-        //    return View(new List<Payment>());
-        //}
-
-        //public async Task<IActionResult> Index()
-        //{
-        //    List<Payment> payments = new List<Payment>();
-
-        //    using (var httpClient = new HttpClient())
-        //    {
-        //        var response = await httpClient.GetAsync(Const.APIEndPoint + "Payments");
-
-        //        if (response.IsSuccessStatusCode)
-        //        {
-        //            var content = await response.Content.ReadAsStringAsync();
-        //            var result = JsonConvert.DeserializeObject<BusinessResult>(content);
-
-        //            if (result != null && result.Data != null)
-        //            {
-        //                payments = JsonConvert.DeserializeObject<List<Payment>>(result.Data.ToString());
-        //            }
-        //        }
-        //        else
-        //        {
-        //            // Handle error response from the API (optional)
-        //            ModelState.AddModelError(string.Empty, "Failed to load payments from API.");
-        //        }
-        //    }
-        //    return View(payments);
-        //}
 
         public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 5)
         {
@@ -157,61 +110,6 @@ namespace KoiShow.MVCWebApp.Controllers
             return registerForms;
         }
 
-        // GET: Payments/Create
-        //public async Task<IActionResult> Create()
-        //{
-        //    var data = await this.GetRegisterForm();
-        //    ViewData["RegisterFormId"] = new SelectList(_context.RegisterForms, "RegisterFormId", "RegisterFormId");
-        //    return View();
-        //}
-
-        //// POST: Payments/Create
-        //// To protect from overposting attacks, enable the specific properties you want to bind to.
-        //// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Create([Bind("PaymentId,RegisterFormId,TransactionId,PaymentAmount,PaymentDate,PaymentStatus,Description,Vatrate,ActualCost,DiscountAmount,FinalAmount,Currency")] Payment Payment)
-        //{
-        //    {
-        //        bool saveStatus = false;
-
-        //        if (ModelState.IsValid)
-        //        {
-        //            using (var httpClient = new HttpClient())
-        //            {
-        //                using (var response =
-        //                       await httpClient.PostAsJsonAsync(Const.APIEndPoint + $"Payments", Payment))
-        //                {
-        //                    if (response.IsSuccessStatusCode)
-        //                    {
-        //                        var content = await response.Content.ReadAsStringAsync();
-        //                        var result = JsonConvert.DeserializeObject<BusinessResult>(content);
-
-        //                        if (result != null && result.Status == Const.SUCCESS_CREATE_CODE)
-        //                        {
-        //                            saveStatus = true;
-        //                        }
-        //                        else
-        //                        {
-        //                            saveStatus = false;
-        //                        }
-        //                    }
-        //                }
-        //            }
-        //        }
-
-        //        if (saveStatus)
-        //        {
-        //            return RedirectToAction(nameof(Index));
-        //        }
-        //        else
-        //        {
-        //            ViewData["RegisterFormId"] = new SelectList(_context.Contests, "ContestId", "CompetitionType", Payment.RegisterFormId);
-        //            return View(Payment);
-        //        }
-        //    }
-        //}
-
         public async Task<IActionResult> Create()
         {
             ViewData["RegisterFormId"] = new SelectList(await GetRegisterForm(), "RegisterFormId", "RegisterFormId");
@@ -220,113 +118,69 @@ namespace KoiShow.MVCWebApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("PaymentId,RegisterFormId,TransactionId,PaymentAmount,PaymentDate,PaymentStatus,Description,Vatrate,ActualCost,DiscountAmount,FinalAmount,Currency")] Payment payment)
+        public async Task<IActionResult> Create([Bind("RegisterFormId,TransactionId,PaymentAmount,PaymentDate,PaymentStatus,Description,Currency,OrderType")] Payment payment)
         {
             if (ModelState.IsValid)
             {
                 using (var httpClient = new HttpClient())
                 {
-                    var response = await httpClient.PostAsJsonAsync(Const.APIEndPoint + "Payments/create", payment);
+                    // Create PaymentDto object to send to API
+                    var paymentDto = new PaymentDto
+                    {
+                        PaymentId = 0, // Assuming paymentId is auto-generated
+                        RegisterFormId = payment.RegisterFormId ?? 0,
+                        TransactionId = payment.TransactionId ?? "Mã giao dịch",
+                        PaymentAmount = payment.PaymentAmount ?? 0.0,
+                        PaymentDate = payment.PaymentDate ?? DateTime.Now,
+                        PaymentStatus = payment.PaymentStatus ?? "Chờ xử lý",
+                        Description = payment.Description ?? "Mô tả thanh toán",
+                        Currency = payment.Currency ?? "VND",
+                        OrderType = payment.OrderType ?? "Thanh toán trực tuyến"
+                    };
+
+                    // Call the API to create the payment and generate the payment URL
+                    var response = await httpClient.PostAsJsonAsync(Const.APIEndPoint + "Payments/create-and-generate-url", paymentDto);
 
                     if (response.IsSuccessStatusCode)
                     {
-                        return RedirectToAction(nameof(Index));
+                        var content = await response.Content.ReadAsStringAsync();
+                        var result = JsonConvert.DeserializeObject<dynamic>(content); // Deserialize as dynamic to extract fields
+
+                        // Check if the API returned success and if the data contains the payment URL
+                        if (result != null && result.status == 1 && result.data != null)
+                        {
+                            // Extract the paymentUrl directly from the data object
+                            var paymentUrl = result.data.paymentUrl.ToString();
+
+                            // Check if the payment URL is not null or empty
+                            if (!string.IsNullOrEmpty(paymentUrl))
+                            {
+                                // Redirect the user to the payment gateway URL
+                                return Redirect(paymentUrl);
+                            }
+                            else
+                            {
+                                ModelState.AddModelError(string.Empty, "Payment URL is null or empty. Could not redirect to payment gateway.");
+                                return View(payment); // Stay on the current page with error
+                            }
+                        }
+                        else
+                        {
+                            ModelState.AddModelError(string.Empty, "Failed to create payment and generate URL.");
+                        }
                     }
                     else
                     {
-                        ModelState.AddModelError(string.Empty, "Failed to create payment.");
+                        var errorContent = await response.Content.ReadAsStringAsync();
+                        ModelState.AddModelError(string.Empty, $"Failed to create payment. Error: {errorContent}");
                     }
                 }
             }
 
+            // If model is invalid or API call fails, reload the view with the input data
             ViewData["RegisterFormId"] = new SelectList(await GetRegisterForm(), "RegisterFormId", "RegisterFormId", payment.RegisterFormId);
             return View(payment);
         }
-
-        //// GET: Payments/Edit/5
-        //public async Task<IActionResult> Edit(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    Payment Payments = null;
-
-        //    using (var httpClient = new HttpClient())
-        //    {
-        //        using (var response = await httpClient.GetAsync(Const.APIEndPoint + $"Payments/{id}"))
-        //        {
-        //            if (response.IsSuccessStatusCode)
-        //            {
-        //                var content = await response.Content.ReadAsStringAsync();
-        //                var result = JsonConvert.DeserializeObject<BusinessResult>(content);
-
-        //                if (result != null && result.Data != null)
-        //                {
-        //                    Payments = JsonConvert.DeserializeObject<Payment>(result.Data.ToString());
-        //                }
-        //            }
-        //        }
-        //    }
-
-        //    if (Payments == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //        ViewData["RegisterFormId"] = new SelectList(_context.Contests, "RegisterFormId", "RegisterFormId", Payments.RegisterFormId);
-        //        return View(Payments);
-        //    }
-
-
-        //    // POST: Paymentss/Edit/5
-        //    // To protect from overposting attacks, enable the specific properties you want to bind to.
-        //    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        //    [HttpPost]
-        //    [ValidateAntiForgeryToken]
-        //    public async Task<IActionResult> Edit(int id, Payment payment)
-        //    {
-        //        if (id != payment.Id)
-        //        {
-        //            return NotFound();
-        //        }
-
-        //         bool saveStatus = false;
-
-        //        if (ModelState.IsValid)
-        //        {
-        //        using (var httpClient = new HttpClient())
-        //        {
-        //            using (var response =
-        //                   await httpClient.PutAsJsonAsync(Const.APIEndPoint + $"Payments/{id}", payment))
-        //            {
-        //                if (response.IsSuccessStatusCode)
-        //                {
-        //                    var content = await response.Content.ReadAsStringAsync();
-        //                    var result = JsonConvert.DeserializeObject<BusinessResult>(content);
-
-        //                    if (result != null && result.Status == Const.SUCCESS_UPDATE_CODE)
-        //                    {
-        //                        saveStatus = true;
-        //                    }
-        //                    else
-        //                    {
-        //                        saveStatus = false;
-        //                    }
-        //                }
-        //            }
-        //        }
-        //    }
-        //        if (saveStatus)
-        //        {
-        //            return RedirectToAction(nameof(Index));
-        //        }
-        //        else
-        //        {
-        //            ViewData["RegisterFormId"] = new SelectList(_context.RegisterForms, "RegisterFormId", "ApprovalStatus", payment.RegisterFormId);
-        //            return View(payment);
-        //    }
-        //}
 
         public async Task<IActionResult> Edit(int? id)
         {
@@ -384,90 +238,6 @@ namespace KoiShow.MVCWebApp.Controllers
         }
 
 
-        //// GET: Paymentss/Delete/5
-        //public async Task<IActionResult> Delete(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    Payment Payments = null;
-
-        //    using (var httpClient = new HttpClient())
-        //    {
-        //        using (var response = await httpClient.GetAsync(Const.APIEndPoint + $"Payments/{id}"))
-        //        {
-        //            if (response.IsSuccessStatusCode)
-        //            {
-        //                var content = await response.Content.ReadAsStringAsync();
-        //                var result = JsonConvert.DeserializeObject<BusinessResult>(content);
-
-        //                if (result != null && result.Data != null)
-        //                {
-        //                    Payments = JsonConvert.DeserializeObject<Payment>(result.Data.ToString());
-        //                }
-        //            }
-        //        }
-        //    }
-
-        //    if (Payments == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return View(Payments);
-        //}
-
-        //// POST: Paymentss/Delete/5
-        //[HttpPost, ActionName("Delete")]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> DeleteConfirmed(int id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    bool deleteStatus = false;
-
-        //    if (ModelState.IsValid)
-        //    {
-        //        using (var httpClient = new HttpClient())
-        //        {
-        //            using (var response =
-        //                   await httpClient.DeleteAsync(Const.APIEndPoint + $"ContestResults/{id}"))
-        //            {
-        //                if (response.IsSuccessStatusCode)
-        //                {
-        //                    var content = await response.Content.ReadAsStringAsync();
-        //                    var result = JsonConvert.DeserializeObject<BusinessResult>(content);
-
-        //                    if (result != null && result.Status == Const.SUCCESS_DELETE_CODE)
-        //                    {
-        //                        deleteStatus = true;
-        //                    }
-        //                    else
-        //                    {
-        //                        deleteStatus = false;
-        //                    }
-        //                }
-        //            }
-        //        }
-        //    }
-
-        //    if (deleteStatus)
-        //    {
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    else
-        //    {
-        //        return RedirectToAction(nameof(Delete));
-        //    }
-
-
-        //}
-
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
@@ -492,28 +262,35 @@ namespace KoiShow.MVCWebApp.Controllers
 
             if (payment == null) return NotFound();
 
+            ViewData["RegisterFormId"] = new SelectList(await GetRegisterForm(), "RegisterFormId", "RegisterFormId", payment.RegisterFormId);
             return View(payment);
         }
 
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> Delete(int id, Payment payment)
         {
-            bool deleteStatus = false;
+            if (id != payment.Id) return NotFound();
 
-            using (var httpClient = new HttpClient())
+            if (ModelState.IsValid)
             {
-                var response = await httpClient.DeleteAsync(Const.APIEndPoint + $"Payments/{id}");
-
-                if (response.IsSuccessStatusCode)
+                using (var httpClient = new HttpClient())
                 {
-                    deleteStatus = true;
+                    var response = await httpClient.PutAsJsonAsync(Const.APIEndPoint + $"Payments/{id}/cancel", payment);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return RedirectToAction(nameof(Index));
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, "Failed to update payment.");
+                    }
                 }
             }
 
-            if (deleteStatus) return RedirectToAction(nameof(Index));
-
-            return View();
+            ViewData["RegisterFormId"] = new SelectList(await GetRegisterForm(), "RegisterFormId", "RegisterFormId", payment.RegisterFormId);
+            return View(payment);
         }
     }
 }

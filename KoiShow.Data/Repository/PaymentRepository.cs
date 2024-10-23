@@ -39,9 +39,8 @@ namespace KoiShow.Data.Repository
                 TransactionId = paymentRequestDto.TransactionId,
                 PaymentAmount = paymentRequestDto.PaymentAmount,
                 PaymentDate = paymentRequestDto.PaymentDate,
-                PaymentStatus = "Pending", // Set status as Pending for a new payment
+                PaymentStatus = "Pending", 
                 Description = paymentRequestDto.Description,
-                FinalAmount = paymentRequestDto.FinalAmount,
                 Currency = paymentRequestDto.Currency
             };
 

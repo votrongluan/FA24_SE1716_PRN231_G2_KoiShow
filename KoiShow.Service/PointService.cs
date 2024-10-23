@@ -1,5 +1,6 @@
 ﻿using KoiShow.Common;
 using KoiShow.Data;
+using KoiShow.Data.DTO.PointDTO;
 using KoiShow.Data.Models;
 using KoiShow.Service.Base;
 using System;
@@ -16,11 +17,11 @@ namespace KoiShow.Service
 
         Task<IBusinessResult> GetById(int id);
 
-        Task<IBusinessResult> Save(Point point);
+        Task<IBusinessResult> Save(PointUpdateRequestDTO point);
 
         Task<IBusinessResult> Delete(int id);
 
-        Task<IBusinessResult> Create(Point point);
+        Task<IBusinessResult> Create(PointCreateRequestDTO point);
     }
     public class PointService : IPointService
     {
@@ -35,13 +36,35 @@ namespace KoiShow.Service
         {
             var points = await _unitOfWork.PointRepository.GetAllAsync();
 
+            var result = new List<PointResponseDTO>();
+
+            foreach (var point in points)
+            {
+                if (point.DeletedTime == null)
+                {
+                    result.Add(new PointResponseDTO
+                    {
+                        Id = point.Id,
+                        ShapePoint = point.ShapePoint,
+                        ColorPoint = point.ColorPoint,
+                        PatternPoint = point.PatternPoint,
+                        Comment = point.Comment,
+                        PointStatus = point.PointStatus,
+                        JudgeRank = point.JudgeRank,
+                        JuryId = point.JuryId,
+                        Penalties = point.Penalties,
+                        RegisterFormId = point.RegisterFormId
+                    });
+                }
+            }
+
             if (points == null)
             {
                 return new BusinessResult(Const.WARNING_NO_DATA_CODE, Const.WARNING_NO_DATA_MSG, new List<Point>());
             }
             else
             {
-                return new BusinessResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, points);
+                return new BusinessResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, result);
             }
         }
 
@@ -55,11 +78,25 @@ namespace KoiShow.Service
             }
             else
             {
-                return new BusinessResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, point);
+                var result = new PointResponseDTO
+                {
+                    Id = point.Id,
+                    ShapePoint = point.ShapePoint,
+                    ColorPoint = point.ColorPoint,
+                    PatternPoint = point.PatternPoint,
+                    Comment = point.Comment,
+                    PointStatus = point.PointStatus,
+                    JudgeRank = point.JudgeRank,
+                    JuryId = point.JuryId,
+                    Penalties = point.Penalties,
+                    RegisterFormId = point.RegisterFormId
+                };
+                
+                return new BusinessResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, result);
             }
         }
 
-        public async Task<IBusinessResult> Save(Point point)
+        public async Task<IBusinessResult> Save(PointUpdateRequestDTO point)
         {
             try
             {
@@ -68,7 +105,21 @@ namespace KoiShow.Service
 
                 if (pointTmp != null)
                 {
-                    result = await _unitOfWork.PointRepository.UpdateAsync(point);
+                    var newPoint = new Point
+                    {
+                        Id = point.Id,
+                         ShapePoint = point.ShapePoint,
+                        ColorPoint = point.ColorPoint,
+                        PatternPoint = point.PatternPoint,
+                        Comment = point.Comment,
+                        JuryId = point.JuryId,
+                        RegisterFormId = point.RegisterFormId,
+                        PointStatus = point.PointStatus,
+                        JudgeRank = point.JudgeRank,
+                        Penalties = point.Penalties,
+                    };
+
+                    result = await _unitOfWork.PointRepository.UpdateAsync(newPoint);
 
                     if (result > 0)
                     {
@@ -99,6 +150,7 @@ namespace KoiShow.Service
 
                 if (point != null)
                 {
+                    point.DeletedTime = DateTime.UtcNow;
                     var result = await _unitOfWork.PointRepository.RemoveAsync(point);
 
                     if (result)
@@ -121,11 +173,24 @@ namespace KoiShow.Service
             }
         }
 
-        public async Task<IBusinessResult> Create(Point point)
+        public async Task<IBusinessResult> Create(PointCreateRequestDTO point)
         {
             try
             {
-                var result = await _unitOfWork.PointRepository.CreateAsync(point);
+                var newPoint = new Point{
+                    ShapePoint = point.ShapePoint,
+                    ColorPoint = point.ColorPoint,
+                    PatternPoint = point.PatternPoint,
+                    Comment = point.Comment,
+                    JuryId = point.JuryId,
+                    RegisterFormId = point.RegisterFormId,
+                    PointStatus = point.PointStatus,
+                    JudgeRank = point.JudgeRank,
+                    Penalties = point.Penalties
+                };
+                
+
+                var result = await _unitOfWork.PointRepository.CreateAsync(newPoint);
 
                 if (result > 0)
                 {

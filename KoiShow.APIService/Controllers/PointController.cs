@@ -1,6 +1,8 @@
 ﻿using KoiShow.Service.Base;
 using KoiShow.Service;
 using Microsoft.AspNetCore.Mvc;
+using KoiShow.Data.Models;
+using KoiShow.Data.DTO.PointDTO;
 
 namespace KoiShow.APIService.Controllers
 {
@@ -36,7 +38,7 @@ namespace KoiShow.APIService.Controllers
         // PUT: api/Points/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IBusinessResult> PutPoint(int id, Point point)
+        public async Task<IBusinessResult> PutPoint(int id, PointUpdateRequestDTO point)
         {
             return await _pointService.Save(point);
         }
@@ -44,7 +46,7 @@ namespace KoiShow.APIService.Controllers
         // POST: api/Points
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<IBusinessResult> PostPoint(Point point)
+        public async Task<IBusinessResult> PostPoint(PointCreateRequestDTO point)
         {
             return await _pointService.Create(point);
         }

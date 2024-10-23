@@ -22,14 +22,14 @@ namespace KoiShow.API.Service.Controllers
         [HttpGet]
         public async Task<IBusinessResult> GetPayments()
         {
-            return await _registerFormService.GetAll();
+            return await _registerFormService.GetAllWithPayment();
         }
 
         // GET: api/Payments/5
         [HttpGet("{id}")]
         public async Task<IBusinessResult> GetPaymentById(int id)
         {
-            return await _registerFormService.GetById(id);
+            return await _registerFormService.GetByIdWithPayment(id);
         }
 
     }

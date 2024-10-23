@@ -2,7 +2,7 @@
 
 namespace KoiShow.MVCWebApp.Controllers
 {
-    public class LuanContestsController : Controller
+    public class ContestResultsAjaxController : Controller
     {
         public IActionResult Index()
         {

@@ -1,0 +1,138 @@
+﻿@model IEnumerable<KoiShow.Data.Models.Animal>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Animals</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+
+<form method="get" class="mb-3">
+    <div class="input-group">
+        <input type="text" name="searchTerm" value="@ViewBag.SearchTerm" class="form-control" placeholder="Search by AnimalName, Variety or HealthStatus" />
+        <div class="input-group-append">
+            <button class="btn btn-primary" type="submit">Search</button>
+        </div>
+    </div>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewBag.AnimalNameSortParam">Animal Name</a>
+            </th>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewBag.SizeSortParam">Size</a>
+            </th>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewBag.BirthDateSortParam">Birth Date</a>
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ImgLink)
+            </th>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewBag.WeightSortParam">Weight</a>
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewBag.HeathStatusSortParam">Heath Status</a>
+            </th>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewBag.GenderSortParam">Gender</a>
+            </th>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewBag.VarietySortParam">Variety</a>
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.AnimalName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Size)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.BirthDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ImgLink)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Weight)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HeathStatus)
+            </td>
+                <td>
+                    @if (item.Gender == 1)
+                    {
+                        @:Đực
+                    }
+                    else if (item.Gender == 2)
+                    {
+                        @:Cái
+                    }
+                    else
+                    {
+                        @:Không xác định
+                    }
+                </td>
+
+            @* <td>
+                @Html.DisplayFor(modelItem => item.Owner.FullName)
+            </td> *@
+            <td>
+                @Html.DisplayFor(modelItem => item.Variety.Name)
+            </td>
+            @* <td>
+                @Html.DisplayFor(modelItem => item.CreatedBy)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastUpdatedBy)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DeletedBy)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreatedTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastUpdatedTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DeletedTime)
+            </td> *@
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+<nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+        {
+            <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                <a class="page-link" asp-action="Index" asp-route-pageNumber="@i" asp-route-searchTerm="@ViewBag.SearchTerm" asp-route-pageSize="@ViewBag.PageSize">@i</a>
+            </li>
+        }
+    </ul>
+</nav>

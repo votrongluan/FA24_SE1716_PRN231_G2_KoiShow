@@ -5,12 +5,17 @@ using KoiShow.Service;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddScoped<FA24_SE1716_PRN231_G2_KoiShowContext>();
+builder.Services.AddControllersWithViews().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+});
 
 builder.Services.AddSwaggerGen(options =>
 {
@@ -63,6 +68,9 @@ builder.Services.AddScoped<ContestService>();
 builder.Services.AddScoped<AccountService>();
 builder.Services.AddScoped<PaymentService>();
 builder.Services.AddScoped<RegisterFormService>();
+builder.Services.AddScoped<PointService>();
+builder.Services.AddScoped<AnimalService>();
+builder.Services.AddScoped<VarietyService>();
 
 // Add authentication and JWT bearer configuration
 builder.Services.AddAuthentication("Bearer")

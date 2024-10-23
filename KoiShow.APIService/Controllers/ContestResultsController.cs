@@ -35,6 +35,14 @@ namespace KoiShow.APIService.Controllers
             return contestResult;
         }
 
+        [HttpGet("points/{id}")]
+        public async Task<IBusinessResult> GetPointsForContestResult(int id)
+        {
+            var contestResult = await _contestResultService.GetPointsForContestResult(id);
+
+            return contestResult;
+        }
+
         [HttpPut("{id}")]
         public async Task<IBusinessResult> PutContestResult(int id, ContestResult contestResult)
         {

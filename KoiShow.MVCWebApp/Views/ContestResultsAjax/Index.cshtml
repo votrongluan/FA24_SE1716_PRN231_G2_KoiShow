@@ -1,0 +1,201 @@
+﻿<button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#contestModal">
+    Add Contest Result
+</button>
+
+<div class="modal fade" id="contestModal" tabindex="-1" aria-labelledby="contestModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="contestModalLabel">Add Contest Result</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>   
+            </div>
+            <div class="modal-body">
+                <form id="contestForm">
+                    <div class="form-group">
+                        <label for="contestResultName">Name</label>
+                        <input type="text" class="form-control" id="contestResultName" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="contestResultDescription">Description</label>
+                        <input type="text" class="form-control" id="contestResultDescription" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="contestId">Contest</label>
+                        <select id="contestId" class="form-control" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="winnerName">Winner Name</label>
+                        <input type="text" class="form-control" id="winnerName" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="totalScore">Total Score</label>
+                        <input type="number" class="form-control" id="totalScore" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="rank">Rank</label>
+                        <select class="form-control" id="rank" required>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="comments">Comments</label>
+                        <textarea class="form-control" id="comments" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="isPublished">Published</label>
+                        <select class="form-control" id="isPublished" required>
+                            <option value="true">Published</option>
+                            <option value="false">Not published</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="category">Category</label>
+                        <input type="text" class="form-control" id="category" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="prize">Prize</label>
+                        <input type="text" class="form-control" id="prize" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="prizeDescription">Prize Description</label>
+                        <textarea class="form-control" id="prizeDescription" rows="3"></textarea>
+                    </div>
+                    <input type="hidden" id="contestId" value="0" />
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="saveData()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <table class="table table-striped table-bordered table-hover">
+            <thead>
+                <tr class="card-header">
+                    <th class="card-title text-center">Id</th>
+                    <th class="card-title text-center">Name</th>
+                    <th class="card-title text-center">Description</th>
+                    <th class="card-title text-center">Contest</th>
+                    <th class="card-title text-center">Winner Name</th>
+                    <th class="card-title text-center">Total Score</th>
+                    <th class="card-title text-center">Rank</th>
+                    <th class="card-title text-center">Comments</th>
+                    <th class="card-title text-center">Published</th>
+                    <th class="card-title text-center">Category</th>
+                    <th class="card-title text-center">Prize</th>
+                    <th class="card-title text-center">Prize Description</th>
+                </tr>
+            </thead>
+            <tbody class="tblContests">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+@section scripts {
+    <script type="text/javascript">
+        $(document).ready(
+            function () {
+                loadData();
+                loadContests(); 
+            }
+        );
+
+        function loadData() {
+            alert("Load data progressing ...");
+
+            $.ajax({
+                url: 'https://localhost:7046/api/ContestResults',
+                type: "GET",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    alert('Server response: ' + result.message);
+                    console.log(result);
+                    var html = '';
+                    $.each(result.data, function (key, item) {
+                        html += '<tr>';
+                        html += '<td>' + item.id + '</td>';
+                        html += '<td>' + item.contestResultName + '</td>';
+                        html += '<td>' + item.contestResultDescription + '</td>';
+                        html += '<td>' + (item?.contest?.contestName ? item?.contest?.contestName : "N/A") + '</td>';
+                        html += '<td>' + item.winnerName + '</td>';
+                        html += '<td>' + item.totalScore + '</td>';
+                        html += '<td>' + item.rank + '</td>';
+                        html += '<td>' + item.comments + '</td>';
+                        html += '<td>' + item.isPublished + '</td>';
+                        html += '<td>' + item.category + '</td>';
+                        html += '<td>' + item.prize + '</td>';
+                        html += '<td>' + item.prizeDescription + '</td>';
+                        html += '</tr>';
+                    });
+                    $('.tblContests').html(html);
+                },
+                error: function (xhr, error) {
+                    alert(xhr.statusText);
+                }
+            });
+        }
+
+        function loadContests() {
+            $.ajax({
+                url: 'https://localhost:7046/api/Contests',
+                type: "GET",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    var options = '<option value="">-- Select Contest --</option>';
+                    $.each(result.data, function (key, item) {
+                        options += '<option value="' + item.id + '">' + item.contestName + '</option>';
+                    });
+                    $('#contestId').html(options);
+                },
+                error: function (xhr, error) {
+                    alert('Error loading contests: ' + xhr.statusText);
+                }
+            });
+        }
+
+        function saveData() {
+            var contestData = {
+                contestResultName: $('#contestResultName').val(),
+                contestId: $('#contestId').val(),
+                contestResultDescription: $('#contestResultDescription').val(),
+                winnerName: $('#winnerName').val(),
+                totalScore: $('#totalScore').val(),
+                rank: $('#rank').val(),
+                comments: $('#comments').val(),
+                isPublished: $('#isPublished').val() === 'true',
+                category: $('#category').val(),
+                prize: $('#prize').val(),
+                prizeDescription: $('#prizeDescription').val(),
+                id: $('#contestId').val()
+            };
+
+            $.ajax({
+                url: 'https://localhost:7046/api/ContestResults',
+                type: "POST",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(contestData),
+                success: function (result) {
+                    alert('Contest result saved successfully');
+                    $('#contestModal').modal('hide'); 
+                    loadData(); 
+                },
+                error: function (xhr, error) {
+                    alert('Error: ' + xhr.statusText);
+                }
+            });
+        }
+    </script>
+}

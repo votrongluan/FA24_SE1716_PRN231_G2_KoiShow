@@ -1,101 +1,88 @@
 ﻿@model IEnumerable<KoiShow.Data.Models.ContestResult>
-
 @{
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1 class="text-center mb-4">Contest Results</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
+<p class="text-right">
+    <a class="btn btn-primary mb-3" asp-action="Create">Create New</a>
 </p>
-<table class="table">
-    <thead>
+
+<form method="get" class="mb-3">
+    <div class="input-group">
+        <input type="text" name="searchTerm" value="@ViewBag.SearchTerm" class="form-control" placeholder="Search by name, winner name or comment" />
+        <div class="input-group-append">
+            <button class="btn btn-primary" type="submit">Search</button>
+        </div>
+    </div>
+</form>
+
+<table class="table table-bordered shadow-lg" style="border-radius: 10px; overflow: hidden;">
+    <thead class="bg-primary text-white">
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.ContestResultName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ContestResultDescription)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TotalScore)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Rank)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Comments)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IsFinalized)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IsPublished)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Category)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Prize)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PrizeDescription)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Contest)
-            </th>
-            <th></th>
+            <th class="text-center">Contest Information</th>
+            <th class="text-center">Winner Information</th>
+            <th class="text-center">Actions</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.ContestResultName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ContestResultDescription)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TotalScore)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Rank)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Comments)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsFinalized)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsPublished)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Category)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Prize)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PrizeDescription)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Contest.CompetitionType)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr class="bg-light">
+                <td style="border-right: 2px solid #dee2e6;">
+                    <div class="p-3" style="border-radius: 10px; background-color: #f9f9f9;">
+                        <h5 class="font-weight-bold">@Html.DisplayFor(modelItem => item.ContestResultName)</h5>
+                        <p class="text-muted">@Html.DisplayFor(modelItem => item.ContestResultDescription)</p>
+                        <p><strong>Category:</strong> @Html.DisplayFor(modelItem => item.Category)</p>
+                        <p><strong>Contest:</strong> @Html.DisplayFor(modelItem => item.Contest.ContestName)</p>
+                        <p>
+                            <strong>Cup:</strong>
+                            @{
+                                string cupImagePath = item.Rank switch
+                                {
+                                    1 => "/img/cupno1.jpg",  
+                                    2 => "/img/cupno2.jpg", 
+                                    3 => "/img/cupno3.webp",
+                                    _ => "/img/defaultcup.png" 
+                                };
+                            }
+                            <img src="@cupImagePath" alt="Cup" style="width: 30px; height: 30px; vertical-align: middle; margin-left: 5px;" />
+                        </p>
+                        <p><strong>Rank:</strong> @Html.DisplayFor(modelItem => item.Rank)</p>
+                        <p><strong>Score:</strong> @Html.DisplayFor(modelItem => item.TotalScore)</p>
+                        <p><strong>Comments:</strong> @Html.DisplayFor(modelItem => item.Comments)</p>
+
+                    </div>
+                </td>
+                <td>
+                    <div class="p-3" style="border-radius: 10px; background-color: #f9f9f9;">
+                        <p><strong>Winner:</strong> @Html.DisplayFor(modelItem => item.WinnerName)</p>
+                        <p><strong>Prize:</strong> @Html.DisplayFor(modelItem => item.Prize)</p>
+                        <p><strong>Prize Description:</strong> @Html.DisplayFor(modelItem => item.PrizeDescription)</p>
+                        <p>
+                            <strong>Published:</strong>
+                            <input type="checkbox" disabled="disabled" @(item.IsPublished == true ? "checked" : "") />
+                        </p>
+                    </div>
+                </td>
+                <td class="text-center align-middle">
+                    <a class="btn btn-info mb-1" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                    <a class="btn btn-secondary mb-1" asp-action="Details" asp-route-id="@item.Id">Details</a>
+                    <a class="btn btn-danger mb-1" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+
+<nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+        {
+            <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                <a class="page-link" asp-action="Index" asp-route-pageNumber="@i" asp-route-searchTerm="@ViewBag.SearchTerm" asp-route-pageSize="@ViewBag.PageSize">@i</a>
+            </li>
+        }
+    </ul>
+</nav>

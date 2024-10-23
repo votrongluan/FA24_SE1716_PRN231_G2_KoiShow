@@ -14,6 +14,8 @@ public partial class ContestResult : BaseEntity
 
     public string? ContestResultName { get; set; }
 
+    public string? WinnerName { get; set; }
+
     public string? ContestResultDescription { get; set; }
 
     public double? TotalScore { get; set; }
@@ -22,13 +24,9 @@ public partial class ContestResult : BaseEntity
 
     public string? Comments { get; set; }
 
-    public string? IsFinalized { get; set; }
-
-    public string? IsPublished { get; set; }
+    public bool? IsPublished { get; set; }
 
     public string? Category { get; set; }
-
-    public string? Status { get; set; }
 
     public int? Prize { get; set; }
 

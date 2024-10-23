@@ -31,14 +31,44 @@ public class GenericRepository<T> where T : class
     public List<T> GetAllWithInclude(params Expression<Func<T, object>>[] includes)
     {
         IQueryable<T> query = _context.Set<T>();
-        query = includes.Aggregate(query, (current, include) => current.Include(include));
+
+        foreach (var include in includes)
+        {
+            query = query.Include(include);
+        }
+
         return query.ToList();
     }
 
     public async Task<List<T>> GetAllWithIncludeAsync(params Expression<Func<T, object>>[] includes)
     {
         IQueryable<T> query = _context.Set<T>();
-        query = includes.Aggregate(query, (current, include) => current.Include(include));
+
+        foreach (var include in includes)
+        {
+            query = query.Include(include);
+        }
+
+        return await query.ToListAsync();
+    }
+
+    public List<T> GetByConditionWithInclude(Expression<Func<T, bool>> condition, params Expression<Func<T, object>>[] includes)
+    {
+        IQueryable<T> query = _context.Set<T>().Where(condition);
+        foreach (var include in includes)
+        {
+            query = query.Include(include);
+        }
+        return query.ToList();
+    }
+
+    public async Task<List<T>> GetByConditionWithIncludeAsync(Expression<Func<T, bool>> condition, params Expression<Func<T, object>>[] includes)
+    {
+        IQueryable<T> query = _context.Set<T>().Where(condition);
+        foreach (var include in includes)
+        {
+            query = query.Include(include);
+        }
         return await query.ToListAsync();
     }
 

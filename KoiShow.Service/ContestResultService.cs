@@ -2,6 +2,7 @@
 using KoiShow.Service.Base;
 using KoiShow.Common;
 using KoiShow.Data.Models;
+using KoiShow.Data.DTO.Point;
 
 namespace KoiShow.Service;
 
@@ -11,6 +12,7 @@ public interface IContestResultService
     Task<IBusinessResult> GetByIdAsync(int contestResultId);
     Task<IBusinessResult> SaveAsync(ContestResult contestResult);
     Task<IBusinessResult> DeleteByIdAsync(int contestResultId);
+    Task<IBusinessResult> GetPointsForContestResult(int contestId);
 }
 
 public class ContestResultService : IContestResultService
@@ -30,14 +32,15 @@ public class ContestResultService : IContestResultService
 
         try
         {
-            var contestResults = await _unitOfWork.ContestResultRepository.GetAllAsync();
+            var contestResults = await _unitOfWork.ContestResultRepository.GetAllWithIncludeAsync(e => e.Contest);
+            var sortContestResults = contestResults.OrderByDescending(e => e.CreatedTime);
 
-            if (contestResults == null)
+            if (sortContestResults == null)
             {
                 return new BusinessResult(Const.WARNING_NO_DATA_CODE, Const.WARNING_NO_DATA_MSG, new List<ContestResult>());
             }
 
-            return new BusinessResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, contestResults);
+            return new BusinessResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, sortContestResults);
         }
         catch (Exception ex)
         {
@@ -53,7 +56,8 @@ public class ContestResultService : IContestResultService
 
         try
         {
-            var contestResult = await _unitOfWork.ContestResultRepository.GetByIdAsync(contestResultId);
+            var contestResults = await _unitOfWork.ContestResultRepository.GetByConditionWithIncludeAsync(e => e.Id == contestResultId, e => e.Contest);
+            var contestResult = contestResults.FirstOrDefault();
 
             if (contestResult == null)
             {
@@ -134,6 +138,39 @@ public class ContestResultService : IContestResultService
             }
 
             return new BusinessResult(Const.WARNING_NO_DATA_CODE, Const.WARNING_NO_DATA_MSG, contestResult);
+        }
+        catch (Exception ex)
+        {
+            return new BusinessResult(Const.ERROR_EXCEPTION, ex.ToString());
+        }
+    }
+
+    public async Task<IBusinessResult> GetPointsForContestResult(int contestId)
+    {
+        try
+        {
+            var points = await _unitOfWork.PointRepository.GetAllWithIncludeAsync(e => e.RegisterForm.Animal);
+            var filterPoints = points.Where(e => e.RegisterForm.ContestId == contestId).ToList();
+
+            var groupedPoints = filterPoints
+                .GroupBy(e => e.RegisterForm.AnimalId)
+                .Select(g => new PointContestResultViewDTO
+                {
+                    AnimalName = g.First().RegisterForm.Animal.AnimalName,
+                    TotalScore = g.Sum(e => e.TotalScore)
+                })
+                .ToList();
+
+
+            if (groupedPoints != null)
+            {
+                #region Business Rule for update
+                #endregion
+
+                return new BusinessResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, groupedPoints);
+            }
+
+            return new BusinessResult(Const.WARNING_NO_DATA_CODE, Const.WARNING_NO_DATA_MSG, groupedPoints);
         }
         catch (Exception ex)
         {

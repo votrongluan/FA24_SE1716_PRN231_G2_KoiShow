@@ -51,12 +51,12 @@ namespace KoiShow.APIService.Controllers
 
 
         [HttpDelete("{id}")]
-        public async Task<IBusinessResult> DeleteAnimal(int id)
+        public async Task<IBusinessResult> DeletePoint(int id)
         {
             return await _pointService.DeleteById(id);
         }
 
-        private bool AnimalExists(int id)
+        private bool PointExists(int id)
         {
             return _pointService.GetById(id) != null;
         }

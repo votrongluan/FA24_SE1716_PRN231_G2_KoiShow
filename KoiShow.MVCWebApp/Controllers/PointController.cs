@@ -179,39 +179,43 @@ namespace KoiShow.MVCWebApp.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             // Get existing point data
-            using var httpClient = new HttpClient();
-            var response = await httpClient.GetAsync($"{Const.APIEndPoint}Points/{id}");
-
-            if (response.IsSuccessStatusCode)
+            using (var httpClient = new HttpClient())
             {
-                var content = await response.Content.ReadAsStringAsync();
-                var result = JsonConvert.DeserializeObject<BusinessResult>(content);
-
-                if (result != null && result.Data != null)
+                using (var response = await httpClient.GetAsync(Const.APIEndPoint + $"Points/{id}"))
                 {
-                    var point = JsonConvert.DeserializeObject<PointResponseDTO>(result.Data.ToString());
-                    var pointRequestDTO = new PointRequestDTO
-                    {
-                        RegisterFormId = point.RegisterFormId.Value,
-                        ShapePoint = point.ShapePoint.Value,
-                        ColorPoint = point.ColorPoint.Value,
-                        PatternPoint = point.PatternPoint.Value,
-                        Comment = point.Comment,
-                        JudgeRank = point.JudgeRank,
-                        Penalties = point.Penalties.Value
-                        // You can also map other fields if necessary
-                    };
 
-                    // Get register forms for dropdown
-                    var registerForms = await this.GetRegisterForms();
-                    var combinedItems = registerForms.Select(r => new
+                    if (response.IsSuccessStatusCode)
                     {
-                        Id = r.Id,
-                        Text = $"{r.EntryTitle} - Animal: {r.AnimalId}, Contest: {r.ContestId}" // Combine information
-                    });
+                        var content = await response.Content.ReadAsStringAsync();
+                        var result = JsonConvert.DeserializeObject<BusinessResult>(content);
 
-                    ViewBag.RegisterFormId = new SelectList(combinedItems, "Id", "Text", point.RegisterFormId);
-                    return View(pointRequestDTO);
+                        if (result != null && result.Data != null)
+                        {
+                            var point = JsonConvert.DeserializeObject<PointResponseDTO>(result.Data.ToString());
+                            var pointRequestDTO = new PointRequestDTO
+                            {
+                                RegisterFormId = point.RegisterFormId.Value,
+                                ShapePoint = point.ShapePoint.Value,
+                                ColorPoint = point.ColorPoint.Value,
+                                PatternPoint = point.PatternPoint.Value,
+                                Comment = point.Comment,
+                                JudgeRank = point.JudgeRank,
+                                Penalties = point.Penalties.Value
+                                // You can also map other fields if necessary
+                            };
+
+                            // Get register forms for dropdown
+                            var registerForms = await this.GetRegisterForms();
+                            var combinedItems = registerForms.Select(r => new
+                            {
+                                Id = r.Id,
+                                Text = $"{r.EntryTitle} - Animal: {r.AnimalId}, Contest: {r.ContestId}" // Combine information
+                            });
+
+                            ViewBag.RegisterFormId = new SelectList(combinedItems, "Id", "Text", point.RegisterFormId);
+                            return View(pointRequestDTO);
+                        }
+                    }
                 }
             }
 
@@ -223,15 +227,12 @@ namespace KoiShow.MVCWebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("RegisterFormId,JuryId,ShapePoint,ColorPoint,PatternPoint,Comment,PointStatus,JudgeRank,Penalties,TotalScore")] PointRequestDTO pointRequestDTO)
         {
-            if (id != pointRequestDTO.RegisterFormId) // You can validate using a suitable identifier
-            {
-                return NotFound();
-            }
 
             if (ModelState.IsValid)
             {
                 var point = new Point
                 {
+                    Id = id,
                     RegisterFormId = pointRequestDTO.RegisterFormId,
                     JuryId = 1,
                     ShapePoint = pointRequestDTO.ShapePoint,
@@ -244,13 +245,17 @@ namespace KoiShow.MVCWebApp.Controllers
                     TotalScore = pointRequestDTO.ShapePoint + pointRequestDTO.ColorPoint + pointRequestDTO.PatternPoint
                 };
 
-                using var httpClient = new HttpClient();
-                using var response = await httpClient.PutAsJsonAsync($"{Const.APIEndPoint}Points/{id}", point);
-
-                if (response.IsSuccessStatusCode)
+                using (var httpClient = new HttpClient())
                 {
-                    return RedirectToAction(nameof(Index));
+                    using (var response = await httpClient.PutAsJsonAsync($"{Const.APIEndPoint}Points/{id}", point))
+                    {
+                        if (response.IsSuccessStatusCode)
+                        {
+                            return RedirectToAction(nameof(Index));
+                        }
+                    }
                 }
+                    
             }
 
             // If we got this far, something failed; re-load the dropdown and return the view.

@@ -21,10 +21,12 @@ namespace KoiShow.APIService.Controllers
         [HttpGet]
         public async Task<IBusinessResult> GetPoints()
         {
-            return await _pointService.GetAll();
+            var points = await _pointService.GetAll();
+
+            return points;
         }
 
-        // GET: api/Animals/5
+
         [HttpGet("{id}")]
         public async Task<IBusinessResult> GetPoint(int id)
         {
@@ -33,23 +35,21 @@ namespace KoiShow.APIService.Controllers
             return animal;
         }
 
-        // PUT: api/Animals/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+
         [HttpPut("{id}")]
         public async Task<IBusinessResult> PutPoint(int id, Point point)
         {
             return await _pointService.Save(point);
         }
 
-        // POST: api/Animals
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+
         [HttpPost]
         public async Task<IBusinessResult> PostAnimal(Point point)
         {
             return await _pointService.Save(point);
         }
 
-        // DELETE: api/Animals/5
+
         [HttpDelete("{id}")]
         public async Task<IBusinessResult> DeleteAnimal(int id)
         {

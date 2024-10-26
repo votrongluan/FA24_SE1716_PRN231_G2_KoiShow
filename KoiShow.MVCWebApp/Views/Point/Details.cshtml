@@ -1,0 +1,53 @@
+﻿@model KoiShow.Data.Models.Point
+
+@{
+    ViewData["Title"] = "Point Details";
+}
+
+<h1 class="text-center my-4">Point Details</h1>
+
+<div class="container">
+    <div class="bg-light p-4 rounded shadow">
+        <h3 class="mb-4">Point Information</h3>
+
+        <div class="mb-3">
+            <strong>Register Form ID:</strong> @Model.RegisterFormId
+        </div>
+
+        <div class="mb-3">
+            <strong>Jury ID:</strong> @Model.JuryId
+        </div>
+
+        <div class="mb-3">
+            <strong>Shape Point:</strong> @Model.ShapePoint
+        </div>
+
+        <div class="mb-3">
+            <strong>Color Point:</strong> @Model.ColorPoint
+        </div>
+
+        <div class="mb-3">
+            <strong>Pattern Point:</strong> @Model.PatternPoint
+        </div>
+
+        <div class="mb-3">
+            <strong>Comment:</strong> @Model.Comment
+        </div>
+
+        <div class="mb-3">
+            <strong>Judge Rank:</strong> @Model.JudgeRank
+        </div>
+
+        <div class="mb-3">
+            <strong>Penalties:</strong> @Model.Penalties
+        </div>
+
+        <div class="mb-3">
+            <strong>Total Score:</strong> @Model.TotalScore
+        </div>
+
+        <div class="text-center mt-4">
+            <a asp-action="Index" class="btn btn-outline-primary">Back to List</a>
+        </div>
+    </div>
+</div>

@@ -31,22 +31,48 @@ namespace KoiShow.Service
 
         public async Task<IBusinessResult> GetAll()
         {
-            #region Business Rule
+            var points = await _unitOfWork.PointRepository
+                .GetAllWithIncludeAsync(
+                    a => a.Jury,
+                    a => a.RegisterForm,
+                    a => a.RegisterForm.Animal,
+                    a => a.RegisterForm.Contest
+                );
 
-            #endregion
-
-
-            var points = await _unitOfWork.PointRepository.GetAllWithIncludeAsync(a => a.RegisterForm, a => a.Jury);
-
-            if (points == null)
+            if (points == null || !points.Any())
             {
-                return new BusinessResult(Const.WARNING_NO_DATA_CODE, Const.WARNING_NO_DATA_MSG, new List<Point>());
+                return new BusinessResult(
+                    Const.WARNING_NO_DATA_CODE,
+                    Const.WARNING_NO_DATA_MSG,
+                    new List<PointResponseDTO>()
+                );
             }
-            else
+
+            var pointDtos = points.Select(p => new PointResponseDTO
             {
-                return new BusinessResult(Const.SUCCESS_CREATE_CODE, Const.SUCCESS_CREATE_MSG, points);
-            }
+                Id = p.Id,
+                AnimalName = p.RegisterForm?.Animal?.AnimalName,
+                ContestName = p.RegisterForm?.Contest?.ContestName,
+                ShapePoint = p.ShapePoint,
+                ColorPoint = p.ColorPoint,
+                PatternPoint = p.PatternPoint,
+                Comment = p.Comment,
+                JuryId = p.Jury?.Id,
+                RegisterFormId = p.RegisterForm?.Id,
+                PointStatus = p.PointStatus,
+                JudgeRank = p.JudgeRank,
+                Penalties = p.Penalties,
+                TotalScore = p.TotalScore,
+                JuryName = p.Jury?.FullName ?? string.Empty
+            }).ToList();
+
+            return new BusinessResult(
+                Const.SUCCESS_CREATE_CODE,
+                Const.SUCCESS_CREATE_MSG,
+                pointDtos
+            );
         }
+
 
         public async Task<IBusinessResult> GetById(int id)
         {
@@ -55,7 +81,7 @@ namespace KoiShow.Service
             #endregion
 
 
-            var animals = (await _unitOfWork.PointRepository.GetAllWithIncludeAsync(a => a.RegisterForm, a => a.Jury)).Where(e => e.Id == id).FirstOrDefault();
+            var animals = (await _unitOfWork.PointRepository.GetAllWithIncludeAsync(a => a.RegisterForm, a => a.Jury, a => a.RegisterForm.Animal)).Where(e => e.Id == id).FirstOrDefault();
 
             if (animals == null)
             {

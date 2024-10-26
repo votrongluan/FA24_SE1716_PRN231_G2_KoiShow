@@ -140,6 +140,23 @@ namespace KoiShow.Service
             }
         }
 
+        public async Task<IBusinessResult> FindPaymentsByCriteriaAsync(string transactionId, string description, string paymentStatus)
+        {
+            try
+            {
+                var payments = await _unitOfWork.FindPaymentsByCriteriaAsync(transactionId, description, paymentStatus);
+                if (payments.Count > 0)
+                {
+                    return new BusinessResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, payments);
+                }
+                return new BusinessResult(Const.WARNING_NO_DATA_CODE, Const.WARNING_NO_DATA_MSG);
+            }
+            catch (Exception ex)
+            {
+                return new BusinessResult(Const.ERROR_EXCEPTION, ex.Message);
+            }
+        }
+
         //Find Payments by Any Field
         public async Task<IBusinessResult> FindPaymentsByStringAsync(string searchString)
         {

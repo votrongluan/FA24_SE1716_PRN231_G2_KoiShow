@@ -60,11 +60,16 @@ namespace KoiShow.Data.Repository
         // Find Payment By Any Field (Search by string)
         public async Task<List<PaymentDtoResponse>> FindPaymentsByStringAsync(string searchString)
         {
+            // Trim and convert the search string to lowercase
+            string searchLower = searchString.Trim().ToLower();
+
+            // Perform the search
             var payments = await _context.Payments
                 .Where(p =>
-                    (p.TransactionId != null && p.TransactionId.Contains(searchString)) ||
-                    (p.Description != null && p.Description.Contains(searchString)) ||
-                    (p.PaymentStatus != null && p.PaymentStatus.Contains(searchString)))
+                    (p.TransactionId != null && p.TransactionId.ToLower().Contains(searchLower)) ||
+                    (p.Description != null && p.Description.ToLower().Contains(searchLower)) ||
+                    (p.PaymentStatus != null && p.PaymentStatus.ToLower().Contains(searchLower)) ||
+                    (p.PaymentAmount.ToString().Contains(searchLower)))  // Convert PaymentAmount to string for search
                 .ToListAsync();
 
             return payments.Select(MapToDtoResponse).ToList();

@@ -16,12 +16,13 @@ namespace KoiShow.Service
 
     public interface IPaymentService
     {
-        Task<IBusinessResult> CreatePaymentAndGenerateUrl(PaymentDto paymentDto, HttpContext context);
+        Task<IBusinessResult> CreatePayment(PaymentDto paymentDto);
         Task<IBusinessResult> GetAllPaymentsAsync();
         Task<IBusinessResult> FindPaymentById(int paymentId);
         Task<IBusinessResult> FindPaymentsByStringAsync(string searchString);
         Task<IBusinessResult> UpdatePaymentStatusToPaid(int paymentId);
         Task<IBusinessResult> CancelPaymentStatus(int paymentId);
+        Task<IBusinessResult> GeneratePaymentUrl(int paymentId, HttpContext context);
     }
 
     public class PaymentService : IPaymentService
@@ -35,44 +36,60 @@ namespace KoiShow.Service
             _configuration = configuration;
         }
 
-        public async Task<IBusinessResult> CreatePaymentAndGenerateUrl(PaymentDto paymentDto, HttpContext context)
+        public async Task<IBusinessResult> CreatePayment(PaymentDto paymentDto)
         {
             try
             {
-                // Step 1: Create the payment in the database first
-                var paymentCreationResult = await _unitOfWork.CreatePaymentAsync(paymentDto);
-                if (paymentCreationResult == null)
+                var result = await _unitOfWork.CreatePaymentAsync(paymentDto);
+                return new BusinessResult(Const.SUCCESS_CREATE_CODE, Const.SUCCESS_CREATE_MSG, result);
+            }
+            catch (Exception ex)
+            {
+                return new BusinessResult(Const.ERROR_EXCEPTION, ex.Message);
+            }
+        }
+
+        public async Task<IBusinessResult> GeneratePaymentUrl(int paymentId, HttpContext context)
+        {
+            try
+            {
+                // Retrieve payment details
+                var payment = await _unitOfWork.FindPaymentByIdAsync(paymentId);
+                if (payment == null)
                 {
-                    return new BusinessResult(Const.ERROR_EXCEPTION, "Failed to create payment");
+                    return new BusinessResult(Const.ERROR_EXCEPTION, "Payment not found");
                 }
 
-                // Step 2: Generate the payment URL using the VNPay library
+                // Multiply payment amount by 100 (VNPay requires amounts in minor units)
+                var paymentAmount = ((int)payment.PaymentAmount * 100).ToString();
+
                 var timeZoneById = TimeZoneInfo.FindSystemTimeZoneById(_configuration["TimeZoneId"]);
                 var timeNow = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZoneById);
                 var tick = DateTime.Now.Ticks.ToString();
+
                 var pay = new VnPayLibrary();
                 var urlCallBack = _configuration["PaymentCallBack:ReturnUrl"];
 
-                pay.AddRequestData("vnp_Version", _configuration["Vnpay:Version"]);
-                pay.AddRequestData("vnp_Command", _configuration["Vnpay:Command"]);
-                pay.AddRequestData("vnp_TmnCode", _configuration["Vnpay:TmnCode"]);
-                pay.AddRequestData("vnp_Amount", ((int)paymentDto.PaymentAmount * 100).ToString());
+                // Add VNPay request data
+                pay.AddRequestData("vnp_Version", _configuration["VNPay:Version"]);
+                pay.AddRequestData("vnp_Command", _configuration["VNPay:Command"]);
+                pay.AddRequestData("vnp_TmnCode", _configuration["VNPay:TmnCode"]);
+                pay.AddRequestData("vnp_Amount", paymentAmount);  // Amount in minor units
                 pay.AddRequestData("vnp_CreateDate", timeNow.ToString("yyyyMMddHHmmss"));
-                pay.AddRequestData("vnp_CurrCode", _configuration["Vnpay:CurrCode"]);
+                pay.AddRequestData("vnp_CurrCode", _configuration["VNPay:CurrCode"]);
                 pay.AddRequestData("vnp_IpAddr", pay.GetIpAddress(context));
-                pay.AddRequestData("vnp_Locale", _configuration["Vnpay:Locale"]);
-                pay.AddRequestData("vnp_OrderInfo", $"{paymentDto.PaymentId} {paymentDto.Description} {paymentDto.PaymentAmount}");
-                pay.AddRequestData("vnp_OrderType", paymentDto.OrderType);
+                pay.AddRequestData("vnp_Locale", _configuration["VNPay:Locale"]);
+                pay.AddRequestData("vnp_OrderInfo", $"{payment.Id} Payment for service {payment.PaymentAmount}");
+                pay.AddRequestData("vnp_OrderType", "billpayment");  // Make sure you set this field correctly
                 pay.AddRequestData("vnp_ReturnUrl", urlCallBack);
-                pay.AddRequestData("vnp_TxnRef", tick);
+                pay.AddRequestData("vnp_TxnRef", tick);  // Unique transaction reference
 
                 // Generate the payment URL
-                var paymentUrl = pay.CreateRequestUrl(_configuration["Vnpay:BaseUrl"], _configuration["Vnpay:HashSecret"]);
+                var paymentUrl = pay.CreateRequestUrl(_configuration["VNPay:BaseUrl"], _configuration["VNPay:HashSecret"]);
 
-                // Step 3: Return both the payment and the URL to the caller
                 return new BusinessResult(Const.SUCCESS_CREATE_CODE, Const.SUCCESS_CREATE_MSG, new
                 {
-                    Payment = paymentCreationResult,
+                    Payment = payment,
                     PaymentUrl = paymentUrl
                 });
             }

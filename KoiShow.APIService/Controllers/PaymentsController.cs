@@ -23,12 +23,11 @@ namespace KoiShow.API.Service.Controllers
         private readonly PaymentService _paymentService;
         public PaymentsController(PaymentService paymentService) => _paymentService = paymentService;
 
-        // POST: api/Payments/create-and-generate-url
-        [HttpPost("create-and-generate-url")]
-        public async Task<IActionResult> CreatePaymentAndGenerateUrl([FromBody] PaymentDto paymentDto)
+        // POST: api/Payments/create
+        [HttpPost("create")]
+        public async Task<IBusinessResult> CreatePayment([FromBody] PaymentDto paymentDto)
         {
-            var result = await _paymentService.CreatePaymentAndGenerateUrl(paymentDto, HttpContext);
-            return Ok(result);
+            return await _paymentService.CreatePayment(paymentDto);
         }
 
         //GET: api/Payments
@@ -57,7 +56,39 @@ namespace KoiShow.API.Service.Controllers
         [HttpPut("{id}/paid")]
         public async Task<IBusinessResult> UpdatePaymentStatusToPaid(int id)
         {
-            return await _paymentService.UpdatePaymentStatusToPaid(id);
+            // Step 1: Update the payment status to "Paid"
+            var updateResult = await _paymentService.UpdatePaymentStatusToPaid(id);
+
+            // Check if the update was successful
+            if (updateResult.Status == Const.SUCCESS_UPDATE_CODE)
+            {
+                // Step 2: If the update was successful, generate the payment URL
+                var httpContext = HttpContext; // Get the current HttpContext
+                var urlGenerationResult = await _paymentService.GeneratePaymentUrl(id, httpContext);
+
+                // Check if URL generation was successful
+                if (urlGenerationResult.Status == Const.SUCCESS_CREATE_CODE)
+                {
+                    // Return both the payment update result and the generated payment URL
+                    return new BusinessResult(Const.SUCCESS_UPDATE_CODE, "Payment status updated and URL generated successfully", new
+                    {
+                        PaymentUrl = urlGenerationResult
+                    });
+                }
+                else
+                {
+                    // Return success for payment status update but failure for URL generation
+                    return new BusinessResult(Const.SUCCESS_UPDATE_CODE, "Payment status updated, but failed to generate payment URL", new
+                    {
+                        Error = urlGenerationResult.Message
+                    });
+                }
+            }
+            else
+            {
+                // Return failure if the payment update failed
+                return updateResult;
+            }
         }
 
         // PUT: api/Payments/5/cancel

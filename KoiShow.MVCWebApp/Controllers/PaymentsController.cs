@@ -54,7 +54,6 @@ namespace KoiShow.MVCWebApp.Controllers
             return View(pagedPayments);
         }
 
-
         // GET: Payments/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -84,6 +83,52 @@ namespace KoiShow.MVCWebApp.Controllers
             return View(new Payment());
         }
 
+        public async Task<IActionResult> DetailsString(string search, int pageNumber = 1, int pageSize = 5)
+        {
+            if (string.IsNullOrEmpty(search))
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            List<Payment> searchedPayments = new List<Payment>();
+
+            using (var httpClient = new HttpClient())
+            {
+                var response = await httpClient.GetAsync(Const.APIEndPoint + $"Payments/search?searchString={search}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    var result = JsonConvert.DeserializeObject<BusinessResult>(content);
+
+                    if (result != null && result.Data != null)
+                    {
+                        searchedPayments = JsonConvert.DeserializeObject<List<Payment>>(result.Data.ToString());
+                    }
+                }
+            }
+
+            if (searchedPayments.Count > 0)
+            {
+                // Paginate the search results as well
+                var pagedPayments = PaginationHelper<Payment>.GetPagedData(searchedPayments.AsQueryable(), pageNumber, pageSize);
+
+                return View("Index", pagedPayments);
+            }
+
+            // If no search results, return an empty PagedResult to the view
+            var emptyPagedResult = new PagedResult<Payment>
+            {
+                Items = new List<Payment>(),
+                TotalItems = 0,
+                PageSize = pageSize,
+                CurrentPage = pageNumber,
+                TotalPages = 0
+            };
+
+            return View("Index", emptyPagedResult);
+        }
+
         public async Task<List<RegisterForm>> GetRegisterForm()
         {
             List<RegisterForm> registerForms = new();
@@ -109,7 +154,6 @@ namespace KoiShow.MVCWebApp.Controllers
 
             return registerForms;
         }
-
         public async Task<IActionResult> Create()
         {
             ViewData["RegisterFormId"] = new SelectList(await GetRegisterForm(), "RegisterFormId", "RegisterFormId");
@@ -118,68 +162,28 @@ namespace KoiShow.MVCWebApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("RegisterFormId,TransactionId,PaymentAmount,PaymentDate,PaymentStatus,Description,Currency,OrderType")] Payment payment)
+        public async Task<IActionResult> Create([Bind("RegisterFormId,TransactionId,PaymentAmount,PaymentDate,PaymentStatus,Description,Currency,OrderType")] PaymentDto paymentDto)
         {
             if (ModelState.IsValid)
             {
                 using (var httpClient = new HttpClient())
                 {
-                    // Create PaymentDto object to send to API
-                    var paymentDto = new PaymentDto
-                    {
-                        PaymentId = 0, // Assuming paymentId is auto-generated
-                        RegisterFormId = payment.RegisterFormId ?? 0,
-                        TransactionId = payment.TransactionId ?? "Mã giao dịch",
-                        PaymentAmount = payment.PaymentAmount ?? 0.0,
-                        PaymentDate = payment.PaymentDate ?? DateTime.Now,
-                        PaymentStatus = payment.PaymentStatus ?? "Chờ xử lý",
-                        Description = payment.Description ?? "Mô tả thanh toán",
-                        Currency = payment.Currency ?? "VND",
-                        OrderType = payment.OrderType ?? "Thanh toán trực tuyến"
-                    };
-
-                    // Call the API to create the payment and generate the payment URL
-                    var response = await httpClient.PostAsJsonAsync(Const.APIEndPoint + "Payments/create-and-generate-url", paymentDto);
+                    // Send PaymentDto to the API
+                    var response = await httpClient.PostAsJsonAsync(Const.APIEndPoint + "Payments/create", paymentDto);
 
                     if (response.IsSuccessStatusCode)
                     {
-                        var content = await response.Content.ReadAsStringAsync();
-                        var result = JsonConvert.DeserializeObject<dynamic>(content); // Deserialize as dynamic to extract fields
-
-                        // Check if the API returned success and if the data contains the payment URL
-                        if (result != null && result.status == 1 && result.data != null)
-                        {
-                            // Extract the paymentUrl directly from the data object
-                            var paymentUrl = result.data.paymentUrl.ToString();
-
-                            // Check if the payment URL is not null or empty
-                            if (!string.IsNullOrEmpty(paymentUrl))
-                            {
-                                // Redirect the user to the payment gateway URL
-                                return Redirect(paymentUrl);
-                            }
-                            else
-                            {
-                                ModelState.AddModelError(string.Empty, "Payment URL is null or empty. Could not redirect to payment gateway.");
-                                return View(payment); // Stay on the current page with error
-                            }
-                        }
-                        else
-                        {
-                            ModelState.AddModelError(string.Empty, "Failed to create payment and generate URL.");
-                        }
+                        return RedirectToAction(nameof(Index));
                     }
                     else
                     {
-                        var errorContent = await response.Content.ReadAsStringAsync();
-                        ModelState.AddModelError(string.Empty, $"Failed to create payment. Error: {errorContent}");
+                        ModelState.AddModelError(string.Empty, "Failed to create payment.");
                     }
                 }
             }
 
-            // If model is invalid or API call fails, reload the view with the input data
-            ViewData["RegisterFormId"] = new SelectList(await GetRegisterForm(), "RegisterFormId", "RegisterFormId", payment.RegisterFormId);
-            return View(payment);
+            ViewData["RegisterFormId"] = new SelectList(await GetRegisterForm(), "RegisterFormId", "RegisterFormId", paymentDto.RegisterFormId);
+            return View(paymentDto);
         }
 
         public async Task<IActionResult> Edit(int? id)
@@ -224,7 +228,23 @@ namespace KoiShow.MVCWebApp.Controllers
 
                     if (response.IsSuccessStatusCode)
                     {
-                        return RedirectToAction(nameof(Index));
+                        var content = await response.Content.ReadAsStringAsync();
+                        var result = JsonConvert.DeserializeObject<BusinessResult>(content);
+
+                        // Check if URL generation was successful
+                        if (result != null && result.Status == Const.SUCCESS_UPDATE_CODE && result.Data != null)
+                        {
+                            // Extract the PaymentUrl from the response
+                            var paymentData = JsonConvert.DeserializeObject<dynamic>(result.Data.ToString());
+                            string paymentUrl = paymentData.paymentUrl.data.paymentUrl.ToString();
+
+                            // Redirect user to VNPay URL
+                            return Redirect(paymentUrl);
+                        }
+                        else
+                        {
+                            ModelState.AddModelError(string.Empty, "Failed to update payment or generate payment URL.");
+                        }
                     }
                     else
                     {
@@ -236,7 +256,6 @@ namespace KoiShow.MVCWebApp.Controllers
             ViewData["RegisterFormId"] = new SelectList(await GetRegisterForm(), "RegisterFormId", "RegisterFormId", payment.RegisterFormId);
             return View(payment);
         }
-
 
         public async Task<IActionResult> Delete(int? id)
         {

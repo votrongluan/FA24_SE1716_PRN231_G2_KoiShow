@@ -11,7 +11,9 @@
 
 <form method="get" class="mb-3">
     <div class="input-group">
-        <input type="text" name="searchTerm" value="@ViewBag.SearchTerm" class="form-control" placeholder="Search by name, winner name or comment" />
+        <input type="text" name="SearchTermContestResultName" value="@ViewBag.SearchTermContestResultName" class="form-control" placeholder="Search by contest result name" />
+        <input type="text" name="SearchTermWinnerName" value="@ViewBag.SearchTermWinnerName" class="form-control" placeholder="Search by winner name" />
+        <input type="text" name="SearchTermRank" value="@ViewBag.SearchTermRank" class="form-control" placeholder="Search by rank" />
         <div class="input-group-append">
             <button class="btn btn-primary" type="submit">Search</button>
         </div>

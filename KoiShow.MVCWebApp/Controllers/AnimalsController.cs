@@ -22,7 +22,8 @@ namespace KoiShow.MVCWebApp.Controllers
         }
 
         // GET: Animals
-        public async Task<IActionResult> Index(string sortOrder, int pageNumber = 1, int pageSize = 4, string searchTerm = "")
+        public async Task<IActionResult> Index(string sortOrder, int pageNumber = 1, int pageSize = 4, string searchName = "",
+                string searchVariety = "", string searchHeathStatus = "")
         {
             using (var httpClient = new HttpClient())
             {
@@ -37,11 +38,17 @@ namespace KoiShow.MVCWebApp.Controllers
                         {
                             var data = JsonConvert.DeserializeObject<List<Animal>>(result.Data.ToString());
 
-                            if (!string.IsNullOrEmpty(searchTerm))
+                            if (!string.IsNullOrEmpty(searchName))
                             {
-                                data = data.Where(x => x.AnimalName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
-                                    || x.Variety.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
-                                    || x.HeathStatus.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+                                data = data.Where(x => x.AnimalName.Contains(searchName, StringComparison.OrdinalIgnoreCase)).ToList();
+                            }
+                            if (!string.IsNullOrEmpty(searchVariety))
+                            {
+                                data = data.Where(x => x.Variety.Name.Contains(searchVariety, StringComparison.OrdinalIgnoreCase)).ToList();
+                            }
+                            if (!string.IsNullOrEmpty(searchHeathStatus))
+                            {
+                                data = data.Where(x => x.HeathStatus.Contains(searchHeathStatus, StringComparison.OrdinalIgnoreCase)).ToList();
                             }
 
                             // Default sort order
@@ -106,7 +113,10 @@ namespace KoiShow.MVCWebApp.Controllers
 
                             ViewBag.CurrentPage = pageNumber;
                             ViewBag.TotalPages = totalPages;
-                            ViewBag.SearchTerm = searchTerm;
+                            ViewBag.SearchName = searchName;
+                            ViewBag.SearchVariety = searchVariety;
+                            ViewBag.SearchHeathStatus = searchHeathStatus;
+
                             ViewBag.PageSize = pageSize;
 
                             return View(pagedData);

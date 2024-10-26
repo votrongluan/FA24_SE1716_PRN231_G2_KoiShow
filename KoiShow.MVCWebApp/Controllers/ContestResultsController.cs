@@ -9,7 +9,7 @@ namespace KoiShow.MVCWebApp.Controllers
 {
     public class ContestResultsController : Controller
     {
-        public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 2, string searchTerm = "")
+        public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 2, string SearchTermContestResultName = "", string SearchTermWinnerName = "", string SearchTermRank = "")
         {
             using (var httpClient = new HttpClient())
             {
@@ -24,10 +24,7 @@ namespace KoiShow.MVCWebApp.Controllers
                         {
                             var data = JsonConvert.DeserializeObject<List<ContestResult>>(result.Data.ToString());
 
-                            if (!string.IsNullOrEmpty(searchTerm))
-                            {
-                                data = data.Where(x => x.ContestResultName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) || x.WinnerName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) || x.Comments.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
-                            }
+                            data = data.Where(x => x.ContestResultName.Contains(SearchTermContestResultName, StringComparison.OrdinalIgnoreCase) && x.WinnerName.Contains(SearchTermWinnerName, StringComparison.OrdinalIgnoreCase) && x.Rank.ToString().Contains(SearchTermRank, StringComparison.OrdinalIgnoreCase)).ToList();
 
                             var totalResults = data.Count;
                             var totalPages = (int)Math.Ceiling(totalResults / (double)pageSize);
@@ -35,7 +32,11 @@ namespace KoiShow.MVCWebApp.Controllers
 
                             ViewBag.CurrentPage = pageNumber;
                             ViewBag.TotalPages = totalPages;
-                            ViewBag.SearchTerm = searchTerm;
+
+                            ViewBag.SearchTermContestResultName = SearchTermContestResultName;
+                            ViewBag.SearchTermWinnerName = SearchTermWinnerName;
+                            ViewBag.SearchTermRank = SearchTermRank;
+
                             ViewBag.PageSize = pageSize;
 
                             return View(pagedData);

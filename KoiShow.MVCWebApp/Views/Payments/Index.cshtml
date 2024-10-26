@@ -6,16 +6,103 @@
     string search = Context.Request.Query["search"];
 }
 
-<h1>Payments</h1>
+<style>
+    /* Style for search form */
+    form.d-flex {
+        margin-bottom: 1.5rem;
+        gap: 0.5rem;
+    }
+
+    form.d-flex input.form-control {
+        max-width: 200px;
+    }
+
+    form.d-flex button {
+        min-width: 100px;
+    }
+
+    /* Table styling */
+    .table {
+        border-collapse: separate;
+        border-spacing: 0;
+        width: 100%;
+    }
+
+    .table thead th {
+        background-color: #f8f9fa;
+        font-weight: bold;
+        border-bottom: 2px solid #dee2e6;
+        text-align: center;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f1f3f5;
+        cursor: pointer;
+    }
+
+    .table td, .table th {
+        text-align: center;
+        vertical-align: middle;
+        padding: 0.75rem;
+        border-top: 1px solid #dee2e6;
+    }
+
+    .table td a {
+        color: #007bff;
+        text-decoration: none;
+    }
+
+    .table td a:hover {
+        text-decoration: underline;
+    }
+
+    /* Pagination styling */
+    .pagination {
+        margin-top: 1.5rem;
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: #007bff;
+        border-color: #007bff;
+        color: white;
+    }
+
+    .pagination .page-item .page-link {
+        color: #007bff;
+        border: 1px solid #dee2e6;
+        margin: 0 2px;
+    }
+
+    .pagination .page-item .page-link:hover {
+        background-color: #e9ecef;
+        color: #007bff;
+    }
+
+    .pagination .page-item.disabled .page-link {
+        color: #6c757d;
+        background-color: #ffffff;
+        border-color: #dee2e6;
+    }
+
+    /* Optional link styling for Edit | Details | Delete */
+    .table td a {
+        margin-right: 0.5rem;
+    }
+</style>
+
 
 <!-- Search Form -->
-<form asp-action="DetailsString" method="get" class="d-flex align-items-center my-2">
-    <input type="text" name="search" class="form-control me-3" placeholder="Search payments..." value="@search" />
+<form asp-action="SearchPayments" method="get" class="d-flex align-items-center my-2 justify-content-end">
+    <input type="text" name="transactionId" class="form-control me-2" placeholder="Transaction ID" value="@Context.Request.Query["transactionId"]" />
+    <input type="text" name="description" class="form-control me-2" placeholder="Description" value="@Context.Request.Query["description"]" />
+    <input type="text" name="paymentStatus" class="form-control me-2" placeholder="Payment Status" value="@Context.Request.Query["paymentStatus"]" />
     <button type="submit" class="btn btn-outline-success">Search</button>
 </form>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-danger" style="color: white; padding: 8px 12px; border-radius: 5px; text-decoration: none;">
+        Create Payment
+    </a>
 </p>
 
 @if (Model.Items.Any())
@@ -52,11 +139,18 @@
                     <td>@Html.DisplayFor(modelItem => item.DiscountAmount)</td>
                     <td>@Html.DisplayFor(modelItem => item.FinalAmount)</td>
                     <td>@Html.DisplayFor(modelItem => item.Currency)</td>
-                    <td>
-                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                        <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    <td style="display: flex; gap: 5px;">
+                        <a asp-action="Edit" class="btn btn-primary" asp-route-id="@item.Id" style="color: white; padding: 8px 12px; border-radius: 5px; text-decoration: none;">
+                            Edit
+                        </a>
+                        <a asp-action="Details" class="btn btn-info" asp-route-id="@item.Id" style="color: white; padding: 8px 12px; border-radius: 5px; text-decoration: none;">
+                            Details
+                        </a>
+                        <a asp-action="Delete" class="btn btn-danger" asp-route-id="@item.Id" style="color: white; padding: 8px 12px; border-radius: 5px; text-decoration: none;">
+                            Delete
+                        </a>
                     </td>
+
                 </tr>
             }
         </tbody>

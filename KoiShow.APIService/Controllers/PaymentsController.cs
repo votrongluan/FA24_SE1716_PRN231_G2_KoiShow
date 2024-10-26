@@ -45,11 +45,11 @@ namespace KoiShow.API.Service.Controllers
             return await _paymentService.FindPaymentById(id);
         }
 
-        //GET: api/Payments/search? searchString = value
-       [HttpGet("search")]
-        public async Task<IBusinessResult> FindPaymentsByStringAsync(string searchString)
+        //GET: api/Payments/search
+        [HttpGet("search")]
+        public async Task<IBusinessResult> FindPaymentsByStringAsync(string transactionId = null, string description = null, string paymentStatus = null)
         {
-            return await _paymentService.FindPaymentsByStringAsync(searchString);
+            return await _paymentService.FindPaymentsByCriteriaAsync(transactionId, description, paymentStatus);
         }
 
         // PUT: api/Payments/5/paid

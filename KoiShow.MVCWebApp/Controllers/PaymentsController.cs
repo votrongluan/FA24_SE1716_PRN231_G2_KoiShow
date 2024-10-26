@@ -83,9 +83,10 @@ namespace KoiShow.MVCWebApp.Controllers
             return View(new Payment());
         }
 
-        public async Task<IActionResult> DetailsString(string search, int pageNumber = 1, int pageSize = 5)
+        public async Task<IActionResult> SearchPayments(string transactionId, string description, string paymentStatus, int pageNumber = 1, int pageSize = 5)
         {
-            if (string.IsNullOrEmpty(search))
+            // Validate if at least one parameter is provided
+            if (string.IsNullOrEmpty(transactionId) && string.IsNullOrEmpty(description) && string.IsNullOrEmpty(paymentStatus))
             {
                 return RedirectToAction(nameof(Index));
             }
@@ -94,7 +95,9 @@ namespace KoiShow.MVCWebApp.Controllers
 
             using (var httpClient = new HttpClient())
             {
-                var response = await httpClient.GetAsync(Const.APIEndPoint + $"Payments/search?searchString={search}");
+                // Construct the query string with the provided parameters
+                var query = $"transactionId={transactionId}&description={description}&paymentStatus={paymentStatus}";
+                var response = await httpClient.GetAsync(Const.APIEndPoint + $"Payments/search?{query}");
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -108,25 +111,10 @@ namespace KoiShow.MVCWebApp.Controllers
                 }
             }
 
-            if (searchedPayments.Count > 0)
-            {
-                // Paginate the search results as well
-                var pagedPayments = PaginationHelper<Payment>.GetPagedData(searchedPayments.AsQueryable(), pageNumber, pageSize);
+            // Paginate the search results as well
+            var pagedPayments = PaginationHelper<Payment>.GetPagedData(searchedPayments.AsQueryable(), pageNumber, pageSize);
 
-                return View("Index", pagedPayments);
-            }
-
-            // If no search results, return an empty PagedResult to the view
-            var emptyPagedResult = new PagedResult<Payment>
-            {
-                Items = new List<Payment>(),
-                TotalItems = 0,
-                PageSize = pageSize,
-                CurrentPage = pageNumber,
-                TotalPages = 0
-            };
-
-            return View("Index", emptyPagedResult);
+            return View("Index", pagedPayments);
         }
 
         public async Task<List<RegisterForm>> GetRegisterForm()

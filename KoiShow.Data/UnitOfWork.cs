@@ -94,6 +94,11 @@ public class UnitOfWork
         return await PPaymentRepository.FindPaymentsByStringAsync(searchString);
     }
 
+    public async Task<List<PaymentDtoResponse>> FindPaymentsByCriteriaAsync(string transactionId, string description, string paymentStatus)
+    {
+        return await PPaymentRepository.FindPaymentsByCriteriaAsync(transactionId, description, paymentStatus);
+    }
+
     public async Task<PaymentDtoResponse> UpdatePaymentStatusToPaidAsync(int paymentId)
     {
         return await PPaymentRepository.UpdatePaymentStatusToPaidAsync(paymentId);

@@ -17,110 +17,120 @@ namespace KoiShow.MVCWebApp.Controllers
             _context = context;
         }
 
-        // GET: ContestResults
-        public async Task<IActionResult> Index()
+        // GET: Points
+        public async Task<IActionResult> Index(
+            string sortOrder,
+            int pageNumber = 1,
+            int pageSize = 5,
+            string searchTerm = "")
         {
-            using (var httpClient = new HttpClient())
+            using var httpClient = new HttpClient();
+            using var response = await httpClient.GetAsync(Const.APIEndPoint + "Points");
+
+            if (response.IsSuccessStatusCode)
             {
-                using (var response = await httpClient.GetAsync(Const.APIEndPoint + $"Point"))
+                var content = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<BusinessResult>(content);
+
+                if (result != null && result.Data != null)
                 {
-                    if (response.IsSuccessStatusCode)
+                    var data = JsonConvert.DeserializeObject<List<PointResponseDTO>>(result.Data.ToString());
+
+                    // Search filter
+                    if (!string.IsNullOrEmpty(searchTerm))
                     {
-                        var content = await response.Content.ReadAsStringAsync();
-                        var result = JsonConvert.DeserializeObject<BusinessResult>(content);
-
-                        if (result != null && result.Data != null)
-                        {
-                            var data = JsonConvert.DeserializeObject<List<PointResponseDTO>>(result.Data.ToString());
-
-                            return View(data);
-                        }
+                        data = data.Where(x =>
+                            x.JuryName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                            x.AnimalName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                            x.ContestName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
                     }
+
+                    // Sorting parameters
+                    ViewBag.AnimalNameSortParam = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+                    ViewBag.TotalPointSortParam = sortOrder == "total_asc" ? "total_desc" : "total_asc";
+                    ViewBag.ColorPointSortParam = sortOrder == "color_asc" ? "color_desc" : "color_asc";
+                    ViewBag.PatternPointSortParam = sortOrder == "pattern_asc" ? "pattern_desc" : "pattern_asc";
+                    ViewBag.ShapePointSortParam = sortOrder == "shape_asc" ? "shape_desc" : "shape_asc";
+
+                    // Sorting logic
+                    data = sortOrder switch
+                    {
+                        "name_desc" => data.OrderByDescending(x => x.AnimalName).ToList(),
+                        "total_asc" => data.OrderBy(x => x.TotalScore).ToList(),
+                        "total_desc" => data.OrderByDescending(x => x.TotalScore).ToList(),
+                        "color_asc" => data.OrderBy(x => x.ColorPoint).ToList(),
+                        "color_desc" => data.OrderByDescending(x => x.ColorPoint).ToList(),
+                        "pattern_asc" => data.OrderBy(x => x.PatternPoint).ToList(),
+                        "pattern_desc" => data.OrderByDescending(x => x.PatternPoint).ToList(),
+                        "shape_asc" => data.OrderBy(x => x.ShapePoint).ToList(),
+                        "shape_desc" => data.OrderByDescending(x => x.ShapePoint).ToList(),
+                        _ => data.OrderBy(x => x.AnimalName).ToList(),
+                    };
+
+                    // Pagination logic
+                    var totalResults = data.Count;
+                    var totalPages = (int)Math.Ceiling(totalResults / (double)pageSize);
+                    var pagedData = data.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+
+                    ViewBag.CurrentPage = pageNumber;
+                    ViewBag.TotalPages = totalPages;
+                    ViewBag.SearchTerm = searchTerm; // Keep search term
+                    ViewBag.PageSize = pageSize;
+
+                    return View(pagedData);
                 }
             }
-
-            return View(new List<ContestResult>());
+            return View(new List<PointResponseDTO>());
         }
 
-        // GET: ContestResults/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            using (var httpClient = new HttpClient())
-            {
-                using (var response = await httpClient.GetAsync(Const.APIEndPoint + $"Point/{id}"))
-                {
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var content = await response.Content.ReadAsStringAsync();
-                        var result = JsonConvert.DeserializeObject<BusinessResult>(content);
-
-                        if (result != null && result.Data != null)
-                        {
-                            var data = JsonConvert.DeserializeObject<PointResponseDTO>(result.Data.ToString());
-
-                            return View(data);
-                        }
-                    }
-                }
-            }
-
-            return NotFound();
-        }
-
-        public async Task<List<PointResponseDTO>> GetContest()
-        {
-            List<PointResponseDTO> points = new();
-
-            using (var httpClient = new HttpClient())
-            {
-                using (var response = await httpClient.GetAsync(Const.APIEndPoint + $"Point"))
-                {
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var content = await response.Content.ReadAsStringAsync();
-                        var result = JsonConvert.DeserializeObject<BusinessResult>(content);
-
-                        if (result != null && result.Data != null)
-                        {
-                            var data = JsonConvert.DeserializeObject<List<PointResponseDTO>>(result.Data.ToString());
-
-                            points = data;
-                        }
-                    }
-                }
-            }
-
-            return points;
-        }
-
-        // GET: ContestResults/Create
+        // GET: Animals/Create
         public async Task<IActionResult> Create()
         {
-            var data = await this.GetContest();
-            ViewData["ContestId"] = new SelectList(await this.GetContest(), "Id", "ContestName");
-            return View();
+            // Lấy danh sách các RegisterForms
+            var registerForms = await this.GetRegisterForms();
+
+
+            // Kết hợp các thông tin vào danh sách để sử dụng trong dropdown
+            var combinedItems = registerForms.Select(r => new
+            {
+                Id = r.Id,
+                Text = $"{r.EntryTitle} - Animal: {r.AnimalId}, Contest: {r.ContestId}" // Kết hợp thông tin
+            });
+
+            ViewBag.RegisterFormId = new SelectList(combinedItems, "Id", "Text");
+
+            return View(new PointRequestDTO()); // Trả về model rỗng
         }
 
-        // POST: ContestResults/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
+
+        // POST: Points/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ContestResultId,ContestId,ContestResultName,ContestResultDescription,TotalScore,Rank,Comments,IsFinalized,IsPublished,Category,Status,Prize,PrizeDescription")] ContestResult contestResult)
+        public async Task<IActionResult> Create([Bind("RegisterFormId,JuryId,ShapePoint,ColorPoint,PatternPoint,Comment,PointStatus,JudgeRank,Penalties,TotalScore")] PointRequestDTO pointRequestDTO)
         {
             bool saveStatus = false;
 
             if (ModelState.IsValid)
             {
+                var point = new Point
+                {
+                    RegisterFormId = pointRequestDTO.RegisterFormId,
+                    JuryId = 1,
+                    ShapePoint = pointRequestDTO.ShapePoint,
+                    ColorPoint = pointRequestDTO.ColorPoint,
+                    PatternPoint = pointRequestDTO.PatternPoint,
+                    Comment = pointRequestDTO.Comment,
+                    PointStatus = 1,
+                    JudgeRank = pointRequestDTO.JudgeRank,
+                    Penalties = pointRequestDTO.Penalties,
+                    TotalScore = pointRequestDTO.ShapePoint + pointRequestDTO.ColorPoint + pointRequestDTO.PatternPoint
+                };
+
                 using (var httpClient = new HttpClient())
                 {
                     using (var response =
-                           await httpClient.PostAsJsonAsync(Const.APIEndPoint + $"ContestResults", contestResult))
+                           await httpClient.PostAsJsonAsync(Const.APIEndPoint + $"Points", point))
                     {
                         if (response.IsSuccessStatusCode)
                         {
@@ -131,10 +141,6 @@ namespace KoiShow.MVCWebApp.Controllers
                             {
                                 saveStatus = true;
                             }
-                            else
-                            {
-                                saveStatus = false;
-                            }
                         }
                     }
                 }
@@ -146,167 +152,171 @@ namespace KoiShow.MVCWebApp.Controllers
             }
             else
             {
-                ViewData["ContestId"] = new SelectList(_context.Contests, "ContestId", "ContestName", contestResult.ContestId);
-                return View(contestResult);
+                ViewData["RegisterFormId"] = new SelectList(await this.GetRegisterForms(), "Id", "ContestName");
+                return View(pointRequestDTO);
             }
         }
 
-        // GET: ContestResults/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        // Các phương thức khác giữ nguyên...
+
+        // Helper methods to get RegisterForms and Accounts
+        private async Task<IEnumerable<RegisterForm>> GetRegisterForms()
         {
-            if (id == null)
+            using var httpClient = new HttpClient();
+            using var response = await httpClient.GetAsync(Const.APIEndPoint + "RegisterForm");
+
+            if (response.IsSuccessStatusCode)
             {
-                return NotFound();
+                var content = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<BusinessResult>(content);
+                return JsonConvert.DeserializeObject<List<RegisterForm>>(result.Data.ToString());
             }
 
-            ContestResult contestResult = null;
+            return Enumerable.Empty<RegisterForm>();
+        }
 
-            using (var httpClient = new HttpClient())
+        // GET: Points/Edit/5
+        public async Task<IActionResult> Edit(int id)
+        {
+            // Get existing point data
+            using var httpClient = new HttpClient();
+            var response = await httpClient.GetAsync($"{Const.APIEndPoint}Points/{id}");
+
+            if (response.IsSuccessStatusCode)
             {
-                using (var response = await httpClient.GetAsync(Const.APIEndPoint + $"ContestResults/{id}"))
-                {
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var content = await response.Content.ReadAsStringAsync();
-                        var result = JsonConvert.DeserializeObject<BusinessResult>(content);
+                var content = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<BusinessResult>(content);
 
-                        if (result != null && result.Data != null)
-                        {
-                            contestResult = JsonConvert.DeserializeObject<ContestResult>(result.Data.ToString());
-                        }
-                    }
+                if (result != null && result.Data != null)
+                {
+                    var point = JsonConvert.DeserializeObject<PointResponseDTO>(result.Data.ToString());
+                    var pointRequestDTO = new PointRequestDTO
+                    {
+                        RegisterFormId = point.RegisterFormId.Value,
+                        ShapePoint = point.ShapePoint.Value,
+                        ColorPoint = point.ColorPoint.Value,
+                        PatternPoint = point.PatternPoint.Value,
+                        Comment = point.Comment,
+                        JudgeRank = point.JudgeRank,
+                        Penalties = point.Penalties.Value
+                        // You can also map other fields if necessary
+                    };
+
+                    // Get register forms for dropdown
+                    var registerForms = await this.GetRegisterForms();
+                    var combinedItems = registerForms.Select(r => new
+                    {
+                        Id = r.Id,
+                        Text = $"{r.EntryTitle} - Animal: {r.AnimalId}, Contest: {r.ContestId}" // Combine information
+                    });
+
+                    ViewBag.RegisterFormId = new SelectList(combinedItems, "Id", "Text", point.RegisterFormId);
+                    return View(pointRequestDTO);
                 }
             }
 
-            if (contestResult == null)
+            return NotFound();
+        }
+
+        // POST: Points/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, [Bind("RegisterFormId,JuryId,ShapePoint,ColorPoint,PatternPoint,Comment,PointStatus,JudgeRank,Penalties,TotalScore")] PointRequestDTO pointRequestDTO)
+        {
+            if (id != pointRequestDTO.RegisterFormId) // You can validate using a suitable identifier
             {
                 return NotFound();
             }
-
-            ViewData["ContestId"] = new SelectList(await this.GetContest(), "Id", "ContestName", contestResult.ContestId);
-            return View(contestResult);
-        }
-
-        // POST: ContestResults/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ContestResultId,ContestId,ContestResultName,ContestResultDescription,TotalScore,Rank,Comments,IsFinalized,IsPublished,Category,Status,Prize,PrizeDescription")] ContestResult contestResult)
-        {
-            bool saveStatus = false;
 
             if (ModelState.IsValid)
             {
-                using (var httpClient = new HttpClient())
+                var point = new Point
                 {
-                    using (var response =
-                           await httpClient.PutAsJsonAsync(Const.APIEndPoint + $"ContestResults/{id}", contestResult))
-                    {
-                        if (response.IsSuccessStatusCode)
-                        {
-                            var content = await response.Content.ReadAsStringAsync();
-                            var result = JsonConvert.DeserializeObject<BusinessResult>(content);
+                    RegisterFormId = pointRequestDTO.RegisterFormId,
+                    JuryId = 1,
+                    ShapePoint = pointRequestDTO.ShapePoint,
+                    ColorPoint = pointRequestDTO.ColorPoint,
+                    PatternPoint = pointRequestDTO.PatternPoint,
+                    Comment = pointRequestDTO.Comment,
+                    PointStatus = 1,
+                    JudgeRank = pointRequestDTO.JudgeRank,
+                    Penalties = pointRequestDTO.Penalties,
+                    TotalScore = pointRequestDTO.ShapePoint + pointRequestDTO.ColorPoint + pointRequestDTO.PatternPoint
+                };
 
-                            if (result != null && result.Status == Const.SUCCESS_UPDATE_CODE)
-                            {
-                                saveStatus = true;
-                            }
-                            else
-                            {
-                                saveStatus = false;
-                            }
-                        }
-                    }
+                using var httpClient = new HttpClient();
+                using var response = await httpClient.PutAsJsonAsync($"{Const.APIEndPoint}Points/{id}", point);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction(nameof(Index));
                 }
             }
 
-            if (saveStatus)
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            else
-            {
-                ViewData["ContestId"] = new SelectList(_context.Contests, "ContestId", "ContestName", contestResult.ContestId);
-                return View(contestResult);
-            }
+            // If we got this far, something failed; re-load the dropdown and return the view.
+            ViewBag.RegisterFormId = new SelectList(await this.GetRegisterForms(), "Id", "Text", pointRequestDTO.RegisterFormId);
+            return View(pointRequestDTO);
         }
 
-        // GET: ContestResults/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        // GET: Points/Details/5
+        public async Task<IActionResult> Details(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            using var httpClient = new HttpClient();
+            using var response = await httpClient.GetAsync(Const.APIEndPoint + $"Points/{id}");
 
-            ContestResult contestResult = null;
-
-            using (var httpClient = new HttpClient())
+            if (response.IsSuccessStatusCode)
             {
-                using (var response = await httpClient.GetAsync(Const.APIEndPoint + $"ContestResults/{id}"))
+                var content = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<BusinessResult>(content);
+
+                if (result != null && result.Data != null)
                 {
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var content = await response.Content.ReadAsStringAsync();
-                        var result = JsonConvert.DeserializeObject<BusinessResult>(content);
-
-                        if (result != null && result.Data != null)
-                        {
-                            contestResult = JsonConvert.DeserializeObject<ContestResult>(result.Data.ToString());
-                        }
-                    }
+                    var point = JsonConvert.DeserializeObject<Point>(result.Data.ToString());
+                    return View(point);
                 }
             }
 
-            if (contestResult == null)
-            {
-                return NotFound();
-            }
-
-            return View(contestResult);
+            return NotFound(); // Return a 404 if the point was not found
         }
 
-        // POST: ContestResults/Delete/5
+
+        // GET: Points/Delete/5
+        public async Task<IActionResult> Delete(int id)
+        {
+            using var httpClient = new HttpClient();
+            using var response = await httpClient.GetAsync(Const.APIEndPoint + $"Points/{id}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<BusinessResult>(content);
+
+                if (result != null && result.Data != null)
+                {
+                    var point = JsonConvert.DeserializeObject<Point>(result.Data.ToString());
+                    return View(point);
+                }
+            }
+
+            return NotFound(); // Return a 404 if the point was not found
+        }
+
+        // POST: Points/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            bool deleteStatus = false;
+            using var httpClient = new HttpClient();
+            using var response = await httpClient.DeleteAsync(Const.APIEndPoint + $"Points/{id}");
 
-            if (ModelState.IsValid)
+            if (response.IsSuccessStatusCode)
             {
-                using (var httpClient = new HttpClient())
-                {
-                    using (var response =
-                           await httpClient.DeleteAsync(Const.APIEndPoint + $"ContestResults/{id}"))
-                    {
-                        if (response.IsSuccessStatusCode)
-                        {
-                            var content = await response.Content.ReadAsStringAsync();
-                            var result = JsonConvert.DeserializeObject<BusinessResult>(content);
-
-                            if (result != null && result.Status == Const.SUCCESS_DELETE_CODE)
-                            {
-                                deleteStatus = true;
-                            }
-                            else
-                            {
-                                deleteStatus = false;
-                            }
-                        }
-                    }
-                }
+                return RedirectToAction(nameof(Index)); // Redirect to Index after successful deletion
             }
 
-            if (deleteStatus)
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            else
-            {
-                return RedirectToAction(nameof(Delete));
-            }
+            return NotFound(); // Return a 404 if the deletion failed
         }
+
+
     }
 }

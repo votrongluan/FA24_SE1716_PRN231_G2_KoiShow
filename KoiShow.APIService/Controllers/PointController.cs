@@ -2,6 +2,8 @@
 using KoiShow.Service;
 using Microsoft.AspNetCore.Mvc;
 using KoiShow.Data.Models;
+using KoiShow.Data.DTO.PointDTO;
+
 
 namespace KoiShow.APIService.Controllers
 {
@@ -9,52 +11,54 @@ namespace KoiShow.APIService.Controllers
     [ApiController]
     public class PointsController : ControllerBase
     {
-        //private readonly FA24_SE1716_PRN231_G2_KOISHOWContext _context;
         private readonly PointService _pointService;
 
-        public PointsController(PointService pointService) => _pointService = pointService;
-        //public PointsController(FA24_SE1716_PRN231_G2_KOISHOWContext context)
-        //{
-        //    _context = context;
-        //}
+        public PointsController(PointService pointService)
+        {
+            _pointService = pointService;
+        }
 
-        // GET: api/Points
         [HttpGet]
         public async Task<IBusinessResult> GetPoints()
         {
-            return await _pointService.GetAll();
+            var points = await _pointService.GetAll();
+
+            return points;
         }
 
-        // GET: api/Points/5
+
         [HttpGet("{id}")]
         public async Task<IBusinessResult> GetPoint(int id)
         {
-            var point = await _pointService.GetById(id);
+            var animal = await _pointService.GetById(id);
 
-            return point;
+            return animal;
         }
 
-        // PUT: api/Points/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+
         [HttpPut("{id}")]
         public async Task<IBusinessResult> PutPoint(int id, Point point)
         {
             return await _pointService.Save(point);
         }
 
-        // POST: api/Points
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+
         [HttpPost]
-        public async Task<IBusinessResult> PostPoint(Point point)
+        public async Task<IBusinessResult> PostAnimal(Point point)
         {
-            return await _pointService.Create(point);
+            return await _pointService.Save(point);
         }
 
-        // DELETE: api/Points/5
+
         [HttpDelete("{id}")]
-        public async Task<IBusinessResult> DeletePoint(int id)
+        public async Task<IBusinessResult> DeleteAnimal(int id)
         {
-            return await _pointService.Delete(id);
+            return await _pointService.DeleteById(id);
+        }
+
+        private bool AnimalExists(int id)
+        {
+            return _pointService.GetById(id) != null;
         }
 
     }

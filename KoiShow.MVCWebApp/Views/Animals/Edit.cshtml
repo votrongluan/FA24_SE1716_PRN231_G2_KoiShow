@@ -1,0 +1,115 @@
+﻿@model KoiShow.Data.Models.Animal
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Animal</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit" enctype="multipart/form-data" id="editForm">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="AnimalName" class="control-label"></label>
+                <input asp-for="AnimalName" class="form-control" />
+                <span asp-validation-for="AnimalName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="VarietyId" class="control-label"></label>
+                <select asp-for="VarietyId" class="form-control" asp-items="ViewBag.VarietyId"></select>
+                <span asp-validation-for="VarietyId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Size" class="control-label"></label>
+                <input asp-for="Size" class="form-control" />
+                <span asp-validation-for="Size" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BirthDate" class="control-label"></label>
+                <input asp-for="BirthDate" class="form-control" />
+                <span asp-validation-for="BirthDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ImgLink" class="control-label">Image</label>
+                <br /> 
+                <img src="@Model.ImgLink" alt="Current Image" style="max-width: 100px; max-height: 100px;" onerror="this.onerror=null; this.src='https://i.ibb.co/4pW8ThB/240526771-1181446925711298-326622624622419047-n.jpg';" />
+                <input type="file" id="upload" class="form-control mt-2" /> 
+                <input type="hidden" asp-for="ImgLink" id="imgLink" />
+                <span asp-validation-for="ImgLink" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Weight" class="control-label"></label>
+                <input asp-for="Weight" class="form-control" />
+                <span asp-validation-for="Weight" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="HeathStatus" class="control-label"></label>
+                <input asp-for="HeathStatus" class="form-control" />
+                <span asp-validation-for="HeathStatus" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Gender" class="control-label"></label>
+                <select asp-for="Gender" class="form-control">
+                    <option value="1">Đực</option>
+                    <option value="2">Cái</option>
+                </select>
+                <span asp-validation-for="Gender" class="text-danger"></span>
+            </div>
+
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+
+    @section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        document.getElementById('upload').addEventListener('change', function () {
+            const file = this.files[0];
+            const formData = new FormData();
+            formData.append('image', file);
+
+            fetch('https://api.imgbb.com/1/upload?key=7c8df500f9d36f933afc55fe65081bc4', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const newImgLink = data.data.display_url;
+
+                        document.getElementById('imgLink').value = newImgLink;
+
+                        document.querySelector('img[alt="Current Image"]').src = newImgLink;
+
+                        alert("Image uploaded successfully");
+                    } else {
+                        alert("Image upload failed: " + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        });
+    </script>
+}
+

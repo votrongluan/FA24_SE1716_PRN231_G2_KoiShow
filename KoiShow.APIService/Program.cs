@@ -17,6 +17,8 @@ builder.Services.AddControllersWithViews().AddJsonOptions(options =>
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 });
 
+
+
 builder.Services.AddSwaggerGen(options =>
 {
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -69,6 +71,8 @@ builder.Services.AddScoped<AccountService>();
 builder.Services.AddScoped<PaymentService>();
 builder.Services.AddScoped<RegisterFormService>();
 builder.Services.AddScoped<PointService>();
+builder.Services.AddScoped<AnimalService>();
+builder.Services.AddScoped<VarietyService>();
 
 // Add authentication and JWT bearer configuration
 builder.Services.AddAuthentication("Bearer")

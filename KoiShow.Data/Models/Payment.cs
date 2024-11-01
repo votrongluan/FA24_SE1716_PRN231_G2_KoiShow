@@ -32,6 +32,8 @@ public partial class Payment : BaseEntity
 
     public string? Currency { get; set; }
 
+    public string? OrderType { get; set; }
+
     [ForeignKey(nameof(RegisterFormId))]
     public virtual RegisterForm? RegisterForm { get; set; }
 }

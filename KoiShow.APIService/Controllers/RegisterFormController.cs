@@ -18,19 +18,49 @@ namespace KoiShow.API.Service.Controllers
         private readonly RegisterFormService _registerFormService;
         public RegisterFormController(RegisterFormService registerFormService) => _registerFormService = registerFormService;
 
-        // GET: api/Payments
+
+        // GET: api/RegisterForms
         [HttpGet]
-        public async Task<IBusinessResult> GetPayments()
+        public async Task<IBusinessResult> GetRegisterForms()
         {
             return await _registerFormService.GetAll();
         }
 
-        // GET: api/Payments/5
+        // GET: api/RegisterForms/5
         [HttpGet("{id}")]
-        public async Task<IBusinessResult> GetPaymentById(int id)
+        public async Task<IBusinessResult> GetRegisterForm(int id)
         {
-            return await _registerFormService.GetById(id);
+            var registerForm = await _registerFormService.GetById(id);
+
+            return registerForm;
         }
 
+        // PUT: api/RegisterForms/5
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPut]
+        public async Task<IBusinessResult> PutRegisterForm(RegisterForm registerForm)
+        {
+            return await _registerFormService.Save(registerForm);
+        }
+
+        // POST: api/RegisterForms
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPost]
+        public async Task<IBusinessResult> PostRegisterForm(RegisterForm registerForm)
+        {
+            return await _registerFormService.Save(registerForm);
+        }
+
+        // DELETE: api/RegisterForms/5
+        [HttpDelete("{id}")]
+        public async Task<IBusinessResult> DeleteRegisterForm(int id)
+        {
+            return await _registerFormService.DeleteById(id);
+        }
+
+        private bool RegisterFormExists(int id)
+        {
+            return _registerFormService.GetById(id) != null;
+        }
     }
 }

@@ -1,0 +1,99 @@
+﻿@model IEnumerable<KoiShow.Data.Models.RegisterForm>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<!-- Search Form -->
+<form method="get" class="mb-3">
+    <div class="input-group">
+        <input type="text" name="searchTerm" value="@ViewBag.SearchTerm" class="form-control" placeholder="Search by name, winner name or comment" />
+        <div class="input-group-append">
+            <button class="btn btn-primary" type="submit">Search</button>
+        </div>
+    </div>
+</form>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.EntryTitle)</th>
+            <th>@Html.DisplayNameFor(model => model.CheckinStatus)</th>
+            <th>@Html.DisplayNameFor(model => model.RegistrationDate)</th>
+            <th>@Html.DisplayNameFor(model => model.ApprovalStatus)</th>
+            <th>@Html.DisplayNameFor(model => model.Notes)</th>
+            <th>@Html.DisplayNameFor(model => model.Status)</th>
+            <th>@Html.DisplayNameFor(model => model.Image)</th>
+            <th>@Html.DisplayNameFor(model => model.HealthStatus)</th>
+            <th>@Html.DisplayNameFor(model => model.Color)</th>
+            <th>@Html.DisplayNameFor(model => model.Shape)</th>
+            <th>@Html.DisplayNameFor(model => model.Pattern)</th>
+            <th>@Html.DisplayNameFor(model => model.Animal.AnimalName)</th>
+            <th>@Html.DisplayNameFor(model => model.Contest.CompetitionType)</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.EntryTitle)</td>
+                <td>@Html.DisplayFor(modelItem => item.CheckinStatus)</td>
+                <td>@Html.DisplayFor(modelItem => item.RegistrationDate)</td>
+                <td>@Html.DisplayFor(modelItem => item.ApprovalStatus)</td>
+                <td>@Html.DisplayFor(modelItem => item.Notes)</td>
+                <td>@Html.DisplayFor(modelItem => item.Status)</td>
+                <td>@Html.DisplayFor(modelItem => item.Image)</td>
+                <td>@Html.DisplayFor(modelItem => item.HealthStatus)</td>
+                <td>@Html.DisplayFor(modelItem => item.Color)</td>
+                <td>@Html.DisplayFor(modelItem => item.Shape)</td>
+                <td>@Html.DisplayFor(modelItem => item.Pattern)</td>
+                <td>@Html.DisplayFor(modelItem => item.Animal.AnimalName)</td>
+                <td>@Html.DisplayFor(modelItem => item.Contest.CompetitionType)</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+        <!-- First Button -->
+        <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+            <a class="page-link" asp-action="Index" asp-route-pageNumber="1" asp-route-searchTerm="@ViewBag.SearchTerm" asp-route-pageSize="@ViewBag.PageSize">First</a>
+        </li>
+
+        <!-- Previous Button -->
+        <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+            <a class="page-link" asp-action="Index" asp-route-pageNumber="@(ViewBag.CurrentPage - 1)" asp-route-searchTerm="@ViewBag.SearchTerm" asp-route-pageSize="@ViewBag.PageSize">Previous</a>
+        </li>
+
+        <!-- Page Numbers -->
+        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+        {
+            <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                <a class="page-link" asp-action="Index" asp-route-pageNumber="@i" asp-route-searchTerm="@ViewBag.SearchTerm" asp-route-pageSize="@ViewBag.PageSize">@i</a>
+            </li>
+        }
+
+        <!-- Next Button -->
+        <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+            <a class="page-link" asp-action="Index" asp-route-pageNumber="@(ViewBag.CurrentPage + 1)" asp-route-searchTerm="@ViewBag.SearchTerm" asp-route-pageSize="@ViewBag.PageSize">Next</a>
+        </li>
+
+        <!-- Last Button -->
+        <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+            <a class="page-link" asp-action="Index" asp-route-pageNumber="@ViewBag.TotalPages" asp-route-searchTerm="@ViewBag.SearchTerm" asp-route-pageSize="@ViewBag.PageSize">Last</a>
+        </li>
+    </ul>
+</nav>

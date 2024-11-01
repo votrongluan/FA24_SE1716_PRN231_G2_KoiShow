@@ -1,0 +1,113 @@
+﻿@model KoiShow.Data.Models.Animal
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Animal</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="AnimalName" class="control-label"></label>
+                <input asp-for="AnimalName" class="form-control" />
+                <span asp-validation-for="AnimalName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="VarietyId" class="control-label"></label>
+                <select asp-for="VarietyId" class ="form-control" asp-items="ViewBag.VarietyId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Size" class="control-label"></label>
+                <input asp-for="Size" class="form-control" />
+                <span asp-validation-for="Size" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BirthDate" class="control-label"></label>
+                <input asp-for="BirthDate" class="form-control" />
+                <span asp-validation-for="BirthDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label>Upload Image</label>
+                <input type="file" id="imageUpload" class="form-control" accept="image/*" />
+                <input type="hidden" id="ImgLink" name="ImgLink" />
+            </div>
+            <div class="form-group">
+                <img id="previewImage" src="#" alt="Uploaded Image Preview" style="display:none; width:200px;" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Weight" class="control-label"></label>
+                <input asp-for="Weight" class="form-control" />
+                <span asp-validation-for="Weight" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="HeathStatus" class="control-label"></label>
+                <input asp-for="HeathStatus" class="form-control" />
+                <span asp-validation-for="HeathStatus" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Gender" class="control-label"></label>
+                <select asp-for="Gender" class="form-control">
+                    <option value="1">Đực</option>
+                    <option value="2">Cái</option>
+                </select>
+                <span asp-validation-for="Gender" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+<script>
+    document.getElementById('imageUpload').addEventListener('change', function (event) {
+        var file = event.target.files[0];
+
+        // Check if file exists and is an image
+        if (file && file.type.startsWith('image/')) {
+            var formData = new FormData();
+            formData.append('image', file);
+
+            // Make AJAX request to imgbb API
+            fetch('https://api.imgbb.com/1/upload?key=7c8df500f9d36f933afc55fe65081bc4', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.data && data.data.url) {
+                        // Set the hidden input value to the URL of the uploaded image
+                        document.getElementById('ImgLink').value = data.data.url;
+
+                        // Show the uploaded image in the <img> tag
+                        var previewImage = document.getElementById('previewImage');
+                        previewImage.src = data.data.url;
+                        previewImage.style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error uploading image:', error);
+                });
+        }
+    });
+</script>
+

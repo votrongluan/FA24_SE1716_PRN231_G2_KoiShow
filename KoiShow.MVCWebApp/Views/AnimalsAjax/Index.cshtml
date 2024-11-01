@@ -1,0 +1,186 @@
+﻿@model IEnumerable<KoiShow.Data.Models.Animal>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a href="#" data-toggle="modal" data-target="#createAnimalModal">Create New</a>
+</p>
+
+<table class="table" id="animalTable">
+    <thead>
+        <tr>
+            <th>Animal Name</th>
+            <th>Size</th>
+            <th>Birth Date</th>
+            <th>Image</th>
+            <th>Weight</th>
+            <th>Description</th>
+            <th>Health Status</th>
+            <th>Gender</th>
+            <th>Variety</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<!-- Modal for creating a new animal -->
+<div class="modal fade" id="createAnimalModal" tabindex="-1" aria-labelledby="createAnimalModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createAnimalModalLabel">Create New Animal</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="createAnimalForm">
+                    <div class="form-group">
+                        <label for="animalName">Animal Name</label>
+                        <input type="text" class="form-control" id="animalName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="varietyId">Variety</label>
+                        <select class="form-control" id="varietyId" required>
+                            <option value="">Select Variety</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="size">Size</label>
+                        <input type="number" class="form-control" id="size" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="birthDate">Birth Date</label>
+                        <input type="date" class="form-control" id="birthDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="imgUpload">Upload Image</label>
+                        <input type="file" class="form-control" id="imgUpload" accept="image/*" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="weight">Weight</label>
+                        <input type="number" class="form-control" id="weight" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea class="form-control" id="description" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="heathStatus">Health Status</label>
+                        <input type="text" class="form-control" id="heathStatus" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="gender">Gender</label>
+                        <select class="form-control" id="gender">
+                            <option selected value="1">Đực</option>
+                            <option value="2">Cái</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Create</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        // Fetch varieties
+        $.ajax({
+            url: 'https://localhost:7046/api/Varieties',
+            method: 'GET',
+            success: function (response) {
+                var varieties = response.data;
+                var varietyDropdown = $('#varietyId');
+                $.each(varieties, function (index, variety) {
+                    varietyDropdown.append('<option value="' + variety.id + '">' + variety.name + '</option>');
+                });
+            },
+            error: function (xhr, status, error) {
+                console.error('Error fetching varieties: ' + error);
+            }
+        });
+
+        $.ajax({
+            url: 'https://localhost:7046/api/Animals',
+            method: 'GET',
+            success: function (response) {
+                var animals = response.data;
+                var rows = '';
+                $.each(animals, function (index, animal) {
+                    rows += '<tr>';
+                    rows += '<td>' + animal.animalName + '</td>';
+                    rows += '<td>' + animal.size + '</td>';
+                    rows += '<td>' + new Date(animal.birthDate).toLocaleDateString() + '</td>';
+                    rows += '<td><img src="' + animal.imgLink + '" alt="Animal Image" style="max-width: 100px; max-height: 100px;" onerror="this.onerror=null; this.src=\'https://i.ibb.co/4pW8ThB/240526771-1181446925711298-326622624622419047-n.jpg\';" /></td>';
+                    rows += '<td>' + animal.weight + '</td>';
+                    rows += '<td>' + animal.description + '</td>';
+                    rows += '<td>' + animal.heathStatus + '</td>';
+                    rows += '<td>' + (animal.gender == 1 ? "Đực" : "Cái") + '</td>';
+                    rows += '<td>' + animal.variety.name + '</td>';
+                    rows += '</tr>';
+                });
+                $('#animalTable tbody').html(rows);
+            },
+            error: function (xhr, status, error) {
+                console.error('Error fetching data from API: ' + error);
+            }
+        });
+
+        $('#createAnimalForm').on('submit', function (e) {
+            e.preventDefault();
+
+            var fileInput = document.getElementById('imgUpload');
+            var formData = new FormData();
+            formData.append('image', fileInput.files[0]);
+
+            $.ajax({
+                url: 'https://api.imgbb.com/1/upload?key=7c8df500f9d36f933afc55fe65081bc4',
+                method: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    var imgURL = response.data.url;
+
+                    var animalData = {
+                        animalName: $('#animalName').val(),
+                        varietyId: parseInt($('#varietyId').val()),
+                        size: parseInt($('#size').val()),
+                        birthDate: $('#birthDate').val(),
+                        imgLink: imgURL,
+                        weight: parseFloat($('#weight').val()),
+                        description: $('#description').val(),
+                        heathStatus: $('#heathStatus').val(),
+                        gender: parseInt($('#gender').val())
+                    };
+
+                    $.ajax({
+                        url: 'https://localhost:7046/api/Animals',
+                        method: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify(animalData),
+                        success: function (response) {
+                            alert('Animal created successfully!');
+                            $('#createAnimalModal').modal('hide');
+                            location.reload();
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Error creating animal: ' + error);
+                        }
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error uploading image: ' + error);
+                }
+            });
+        });
+    });
+</script>

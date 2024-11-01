@@ -1,0 +1,69 @@
+﻿@model KoiShow.Data.DTO.PointDTO.PointRequestDTO
+
+@{
+    ViewData["Title"] = "Create Point";
+}
+
+<h1 class="text-center my-4">Create Point</h1>
+
+<div class="container">
+    <form asp-action="Create" class="bg-light p-4 rounded shadow">
+        <h3 class="mb-4">Point Information</h3>
+
+        <div class="form-group">
+            <label asp-for="RegisterFormId" class="font-weight-bold"></label>
+            <select asp-for="RegisterFormId" class="form-control" asp-items="ViewBag.RegisterFormId"></select>
+            <span asp-validation-for="RegisterFormId" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="ShapePoint" class="font-weight-bold"></label>
+            <input asp-for="ShapePoint" class="form-control" />
+            <span asp-validation-for="ShapePoint" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="ColorPoint" class="font-weight-bold"></label>
+            <input asp-for="ColorPoint" class="form-control" />
+            <span asp-validation-for="ColorPoint" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="PatternPoint" class="font-weight-bold"></label>
+            <input asp-for="PatternPoint" class="form-control" />
+            <span asp-validation-for="PatternPoint" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Comment" class="font-weight-bold"></label>
+            <textarea asp-for="Comment" class="form-control" rows="3"></textarea>
+            <span asp-validation-for="Comment" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="JudgeRank" class="font-weight-bold"></label>
+            <input asp-for="JudgeRank" class="form-control" />
+            <span asp-validation-for="JudgeRank" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Penalties" class="font-weight-bold"></label>
+            <input asp-for="Penalties" class="form-control" />
+            <span asp-validation-for="Penalties" class="text-danger"></span>
+        </div>
+
+        <div class="text-center">
+            <input type="submit" value="Create" class="btn btn-success btn-lg my-2" />
+        </div>
+    </form>
+
+    <div class="text-center mt-4">
+        <a asp-action="Index" class="btn btn-outline-primary">Back to List</a>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

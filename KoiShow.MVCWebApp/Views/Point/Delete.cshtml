@@ -1,0 +1,57 @@
+﻿@model KoiShow.Data.Models.Point
+
+@{
+    ViewData["Title"] = "Delete Point";
+}
+
+<h1 class="text-center my-4">Delete Point</h1>
+
+<div class="container">
+    <div class="bg-light p-4 rounded shadow">
+        <h3 class="mb-4">Are you sure you want to delete this point?</h3>
+
+        <div class="mb-3">
+            <strong>Register Form ID:</strong> @Model.RegisterFormId
+        </div>
+
+        <div class="mb-3">
+            <strong>Jury ID:</strong> @Model.JuryId
+        </div>
+
+        <div class="mb-3">
+            <strong>Shape Point:</strong> @Model.ShapePoint
+        </div>
+
+        <div class="mb-3">
+            <strong>Color Point:</strong> @Model.ColorPoint
+        </div>
+
+        <div class="mb-3">
+            <strong>Pattern Point:</strong> @Model.PatternPoint
+        </div>
+
+        <div class="mb-3">
+            <strong>Comment:</strong> @Model.Comment
+        </div>
+
+        <div class="mb-3">
+            <strong>Judge Rank:</strong> @Model.JudgeRank
+        </div>
+
+        <div class="mb-3">
+            <strong>Penalties:</strong> @Model.Penalties
+        </div>
+
+        <div class="mb-3">
+            <strong>Total Score:</strong> @Model.TotalScore
+        </div>
+
+        <form asp-action="DeleteConfirmed" method="post">
+            <input type="hidden" asp-for="Id" />
+            <div class="text-center mt-4">
+                <input type="submit" value="Delete" class="btn btn-danger" />
+                <a asp-action="Index" class="btn btn-outline-primary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>

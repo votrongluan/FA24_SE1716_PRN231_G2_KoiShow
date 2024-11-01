@@ -1,0 +1,144 @@
+﻿@{
+    ViewData["Title"] = "Payments Management";
+}
+
+<button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#paymentModal">
+    Add Payment
+</button>
+
+<div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="paymentModalLabel">Add Payment</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="paymentForm">
+                    <div class="form-group">
+                        <label for="transactionId">Transaction ID</label>
+                        <input type="text" class="form-control" id="transactionId" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="paymentAmount">Payment Amount</label>
+                        <input type="number" class="form-control" id="paymentAmount" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="paymentDate">Payment Date</label>
+                        <input type="date" class="form-control" id="paymentDate" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="paymentStatus">Payment Status</label>
+                        <input type="text" class="form-control" id="paymentStatus" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <input type="text" class="form-control" id="description" />
+                    </div>
+                    <div class="form-group">
+                        <label for="currency">Currency</label>
+                        <input type="text" class="form-control" id="currency" value="VND" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label for="orderType">Order Type</label>
+                        <select class="form-control" id="orderType" required>
+                            <option value="Cash">Cash</option>
+                            <option value="Online">Online</option>
+                        </select>
+                    </div>
+                    <input type="hidden" id="paymentId" value="0" />
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="savePaymentData()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <table class="table table-striped table-bordered table-hover">
+            <thead>
+                <tr class="card-header">
+                    <th class="text-center">Id</th>
+                    <th class="text-center">Transaction ID</th>
+                    <th class="text-center">Amount</th>
+                    <th class="text-center">Date</th>
+                    <th class="text-center">Status</th>
+                    <th class="text-center">Description</th>
+                    <th class="text-center">Currency</th>
+                </tr>
+            </thead>
+            <tbody class="tblPayments">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            loadPaymentData();
+        });
+
+        function loadPaymentData() {
+            $.ajax({
+                url: 'https://localhost:7046/api/Payments',
+                type: "GET",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    var html = '';
+                    $.each(result.data, function (key, item) {
+                        html += '<tr>';
+                        html += '<td>' + item.id + '</td>';
+                        html += '<td>' + item.transactionId + '</td>';
+                        html += '<td>' + item.paymentAmount + '</td>';
+                        html += '<td>' + new Date(item.paymentDate).toLocaleDateString() + '</td>';
+                        html += '<td>' + item.paymentStatus + '</td>';
+                        html += '<td>' + item.description + '</td>';
+                        html += '<td>' + item.currency + '</td>';
+                        html += '</tr>';
+                    });
+                    $('.tblPayments').html(html);
+                },
+                error: function (xhr, error) {
+                    alert('Error loading payments: ' + xhr.statusText);
+                }
+            });
+        }
+
+        function savePaymentData() {
+            var paymentData = {
+                transactionId: $('#transactionId').val(),
+                paymentAmount: $('#paymentAmount').val(),
+                paymentDate: $('#paymentDate').val(),
+                paymentStatus: $('#paymentStatus').val(),
+                description: $('#description').val(),
+                currency: 'VND',  // Hardcoded value
+                orderType: $('#orderType').val(),
+                registerFormId: $('#registerFormId').val()
+            };
+
+            $.ajax({
+                url: 'https://localhost:7046/api/Payments/create',
+                type: "POST",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(paymentData),
+                success: function (result) {
+                    alert('Payment saved successfully');
+                    $('#paymentModal').modal('hide');
+                    loadPaymentData();
+                },
+                error: function (xhr, error) {
+                    alert('Error: ' + xhr.statusText);
+                }
+            });
+        }
+    </script>
+}

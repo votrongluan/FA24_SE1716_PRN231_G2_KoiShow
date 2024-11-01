@@ -2,7 +2,7 @@
 
 namespace KoiShow.MVCWebApp.Controllers
 {
-    public class RegisterFormController : Controller
+    public class PaymentsAjaxController : Controller
     {
         public IActionResult Index()
         {

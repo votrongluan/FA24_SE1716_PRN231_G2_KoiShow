@@ -9,14 +9,7 @@ namespace KoiShow.MVCWebApp.Controllers
 {
     public class ContestResultsController : Controller
     {
-        private readonly FA24_SE1716_PRN231_G2_KoiShowContext _context;
-
-        public ContestResultsController(FA24_SE1716_PRN231_G2_KoiShowContext context)
-        {
-            _context = context;
-        }
-
-        public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 5, string searchTerm = "")
+        public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 2, string SearchTermContestResultName = "", string SearchTermWinnerName = "", string SearchTermRank = "")
         {
             using (var httpClient = new HttpClient())
             {
@@ -31,20 +24,20 @@ namespace KoiShow.MVCWebApp.Controllers
                         {
                             var data = JsonConvert.DeserializeObject<List<ContestResult>>(result.Data.ToString());
 
-                            // Filter by search term
-                            if (!string.IsNullOrEmpty(searchTerm))
-                            {
-                                data = data.Where(x => x.ContestResultName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) || x.WinnerName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) || x.Comments.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
-                            }
+                            data = data.Where(x => x.ContestResultName.Contains(SearchTermContestResultName, StringComparison.OrdinalIgnoreCase) && x.WinnerName.Contains(SearchTermWinnerName, StringComparison.OrdinalIgnoreCase) && x.Rank.ToString().Contains(SearchTermRank, StringComparison.OrdinalIgnoreCase)).ToList();
 
-                            // Implement paging
                             var totalResults = data.Count;
                             var totalPages = (int)Math.Ceiling(totalResults / (double)pageSize);
                             var pagedData = data.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
 
                             ViewBag.CurrentPage = pageNumber;
                             ViewBag.TotalPages = totalPages;
-                            ViewBag.SearchTerm = searchTerm;
+
+                            ViewBag.SearchTermContestResultName = SearchTermContestResultName;
+                            ViewBag.SearchTermWinnerName = SearchTermWinnerName;
+                            ViewBag.SearchTermRank = SearchTermRank;
+
+                            ViewBag.PageSize = pageSize;
 
                             return View(pagedData);
                         }
@@ -154,7 +147,7 @@ namespace KoiShow.MVCWebApp.Controllers
             }
             else
             {
-                ViewData["ContestId"] = new SelectList(_context.Contests, "ContestId", "ContestName", contestResult.ContestId);
+                ViewData["ContestId"] = new SelectList(await this.GetContest(), "Id", "ContestName");
                 return View(contestResult);
             }
         }
@@ -231,7 +224,7 @@ namespace KoiShow.MVCWebApp.Controllers
             }
             else
             {
-                ViewData["ContestId"] = new SelectList(_context.Contests, "ContestId", "ContestName", contestResult.ContestId);
+                ViewData["ContestId"] = new SelectList(await this.GetContest(), "Id", "ContestName");
                 return View(contestResult);
             }
         }

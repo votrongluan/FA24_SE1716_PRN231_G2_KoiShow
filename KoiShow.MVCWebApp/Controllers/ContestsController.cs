@@ -15,15 +15,8 @@ namespace KoiShow.MVCWebApp.Controllers
 {
     public class ContestsController : Controller
     {
-        private readonly FA24_SE1716_PRN231_G2_KoiShowContext _context;
-
-        public ContestsController(FA24_SE1716_PRN231_G2_KoiShowContext context)
-        {
-            _context = context;
-        }
-
         // GET: Contests
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int pageIndex = 1, int pageSize = 4)
         {
             //return View(await _context.Contests.ToListAsync());
             using (var httpClient = new HttpClient())
@@ -39,7 +32,21 @@ namespace KoiShow.MVCWebApp.Controllers
                         {
                             var data = JsonConvert.DeserializeObject<List<Contest>>(result.Data.ToString());
 
-                            return View(data);
+                            // Lấy tổng số trang
+                            var totalItems = data.Count();
+                            var totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+
+                            // Lấy dữ liệu cho trang hiện tại
+                            var pagedContests = data
+                                .Skip((pageIndex - 1) * pageSize)
+                                .Take(pageSize)
+                                .ToList();
+
+                            // Lưu thông tin phân trang trong ViewData
+                            ViewData["PageIndex"] = pageIndex;
+                            ViewData["TotalPages"] = totalPages;
+
+                            return View(pagedContests);
                         }
                     }
                 }
@@ -52,19 +59,6 @@ namespace KoiShow.MVCWebApp.Controllers
         // GET: Contests/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            //if (id == null)
-            //{
-            //    return NotFound();
-            //}
-
-            //var contest = await _context.Contests
-            //    .FirstOrDefaultAsync(m => m.ContestId == id);
-            //if (contest == null)
-            //{
-            //    return NotFound();
-            //}
-
-            //return View(contest);
 
             using (var httpClient = new HttpClient())
             {
@@ -90,7 +84,6 @@ namespace KoiShow.MVCWebApp.Controllers
         // GET: Contests/Create
         public IActionResult Create()
         {
-            //ViewData["BankId"] = new SelectList(await this.Get.Banks(), "BankId", "FullName");
             return View();
         }
 
@@ -99,7 +92,7 @@ namespace KoiShow.MVCWebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ContestId,ContestName,Title,Description,StartDate,EndDate,Location,CompetitionType,Status,Participants,Image,ContactInfo,ShapePointPercent,ColorPointPercent,PatternPointPercent")] Contest contest)
+        public async Task<IActionResult> Create([Bind("Id,ContestName,Title,Description,StartDate,EndDate,Location,CompetitionType,Status,Participants,Image,ContactInfo,ShapePointPercent,ColorPointPercent,PatternPointPercent")] Contest contest)
         {
             bool saveStatus = false;
 
@@ -125,9 +118,6 @@ namespace KoiShow.MVCWebApp.Controllers
                         }
                     }
                 }
-                //_context.Add(contest);
-                //await _context.SaveChangesAsync();
-                //return RedirectToAction(nameof(Index));
             }
             if (saveStatus)
             {
@@ -135,7 +125,6 @@ namespace KoiShow.MVCWebApp.Controllers
             }
             else
             {
-                //ViewData["BankId"] = new SelectList(await this.Get.Banks(), "BankId", "FullName", catBankAccount.BankId);
                 return View(contest);
             } 
         }
@@ -148,11 +137,30 @@ namespace KoiShow.MVCWebApp.Controllers
                 return NotFound();
             }
 
-            var contest = await _context.Contests.FindAsync(id);
+            Contest contest = null;
+
+            using (var httpClient = new HttpClient())
+            {
+                using (var response = await httpClient.GetAsync(Const.APIEndPoint + $"Contests/{id}"))
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var content = await response.Content.ReadAsStringAsync();
+                        var result = JsonConvert.DeserializeObject<BusinessResult>(content);
+
+                        if (result != null && result.Data != null)
+                        {
+                            contest = JsonConvert.DeserializeObject<Contest>(result.Data.ToString());
+                        }
+                    }
+                }
+            }
+
             if (contest == null)
             {
                 return NotFound();
             }
+
             return View(contest);
         }
 
@@ -161,7 +169,7 @@ namespace KoiShow.MVCWebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ContestId,ContestName,Title,Description,StartDate,EndDate,Location,CompetitionType,Status,Participants,Image,ContactInfo,ShapePointPercent,ColorPointPercent,PatternPointPercent")] Contest contest)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,ContestName,Title,Description,StartDate,EndDate,Location,CompetitionType,Status,Participants,Image,ContactInfo,ShapePointPercent,ColorPointPercent,PatternPointPercent")] Contest contest)
         {
             bool saveStatus = false;
 
@@ -169,7 +177,6 @@ namespace KoiShow.MVCWebApp.Controllers
             {
                 using (var httpClient = new HttpClient())
                 {
-                    //using (var response = await httpClient.PutAsJsonAsync(Const.APIEndPoint + "Contests", contest))
                     using (var response = await httpClient.PutAsJsonAsync($"{Const.APIEndPoint}Contests/{id}", contest))
                     {
                         if (response.IsSuccessStatusCode)
@@ -177,7 +184,7 @@ namespace KoiShow.MVCWebApp.Controllers
                             var content = await response.Content.ReadAsStringAsync();
                             var result = JsonConvert.DeserializeObject<BusinessResult>(content);
 
-                            if (result != null && result.Status == Const.SUCCESS_CREATE_CODE)
+                            if (result != null && result.Status == Const.SUCCESS_UPDATE_CODE)
                             {
                                 saveStatus = true;
                             }
@@ -195,35 +202,8 @@ namespace KoiShow.MVCWebApp.Controllers
             }
             else
             {
-                //ViewData["BankId"] = new SelectList(await this.Get.Banks(), "BankId", "FullName", catBankAccount.BankId);
                 return View(contest);
             }
-            //if (id != contest.ContestId)
-            //{
-            //    return NotFound();
-            //}
-
-            //if (ModelState.IsValid)
-            //{
-            //    try
-            //    {
-            //        _context.Update(contest);
-            //        await _context.SaveChangesAsync();
-            //    }
-            //    catch (DbUpdateConcurrencyException)
-            //    {
-            //        if (!ContestExists(contest.ContestId))
-            //        {
-            //            return NotFound();
-            //        }
-            //        else
-            //        {
-            //            throw;
-            //        }
-            //    }
-            //    return RedirectToAction(nameof(Index));
-            //}
-            //return View(contest);
         }
 
         // GET: Contests/Delete/5
@@ -248,19 +228,6 @@ namespace KoiShow.MVCWebApp.Controllers
                 }
             }
             return View(new Contest());
-            //if (id == null)
-            //{
-            //    return NotFound();
-            //}
-
-            //var contest = await _context.Contests
-            //    .FirstOrDefaultAsync(m => m.ContestId == id);
-            //if (contest == null)
-            //{
-            //    return NotFound();
-            //}
-
-            //return View(contest);
         }
 
         // POST: Contests/Delete/5
@@ -299,22 +266,8 @@ namespace KoiShow.MVCWebApp.Controllers
             }
             else
             {
-                //ViewData["BankId"] = new SelectList(await this.Get.Banks(), "BankId", "FullName", catBankAccount.BankId);
                 return RedirectToAction(nameof(Delete));
             }
-            //var contest = await _context.Contests.FindAsync(id);
-            //if (contest != null)
-            //{
-            //    _context.Contests.Remove(contest);
-            //}
-
-            //await _context.SaveChangesAsync();
-            //return RedirectToAction(nameof(Index));
-        }
-
-        private bool ContestExists(int id)
-        {
-            return _context.Contests.Any(e => e.Id == id);
         }
     }
 }

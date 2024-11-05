@@ -24,7 +24,15 @@ namespace KoiShow.MVCWebApp.Controllers
                         {
                             var data = JsonConvert.DeserializeObject<List<ContestResult>>(result.Data.ToString());
 
-                            data = data.Where(x => x.ContestResultName.Contains(SearchTermContestResultName, StringComparison.OrdinalIgnoreCase) && x.WinnerName.Contains(SearchTermWinnerName, StringComparison.OrdinalIgnoreCase) && x.Rank.ToString().Contains(SearchTermRank, StringComparison.OrdinalIgnoreCase)).ToList();
+                            if (!string.IsNullOrEmpty(SearchTermContestResultName) && !string.IsNullOrEmpty(SearchTermRank) && !string.IsNullOrEmpty(SearchTermWinnerName))
+                            {
+                                data = data.Where(
+                                x =>
+                                (x.ContestResultName?.Contains(SearchTermContestResultName, StringComparison.OrdinalIgnoreCase) ?? false) &&
+                                (x.WinnerName?.Contains(SearchTermWinnerName, StringComparison.OrdinalIgnoreCase) ?? false) &&
+                                (x.Rank?.ToString().Contains(SearchTermRank, StringComparison.OrdinalIgnoreCase) ?? false)
+                                ).ToList();
+                            }
 
                             var totalResults = data.Count;
                             var totalPages = (int)Math.Ceiling(totalResults / (double)pageSize);

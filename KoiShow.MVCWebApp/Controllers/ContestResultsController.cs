@@ -24,7 +24,7 @@ namespace KoiShow.MVCWebApp.Controllers
                         {
                             var data = JsonConvert.DeserializeObject<List<ContestResult>>(result.Data.ToString());
 
-                            if (!string.IsNullOrEmpty(SearchTermContestResultName) && !string.IsNullOrEmpty(SearchTermRank) && !string.IsNullOrEmpty(SearchTermWinnerName))
+                            if (!string.IsNullOrEmpty(SearchTermContestResultName) || !string.IsNullOrEmpty(SearchTermRank) || !string.IsNullOrEmpty(SearchTermWinnerName))
                             {
                                 data = data.Where(
                                 x =>

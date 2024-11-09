@@ -21,8 +21,7 @@ namespace KoiShow.MVCWebApp.Controllers
             _context = context;
         }
 
-        // GET: RegisterForms
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchTerm)
         {
             using (var httpClient = new HttpClient())
             {
@@ -38,6 +37,18 @@ namespace KoiShow.MVCWebApp.Controllers
                         if (result?.Data != null)
                         {
                             var data = JsonConvert.DeserializeObject<List<RegisterForm>>(result.Data.ToString());
+
+                            // Apply search filter if searchTerm is provided
+                            if (!string.IsNullOrEmpty(searchTerm))
+                            {
+                                data = data.Where(d =>
+                                    (d.EntryTitle != null && d.EntryTitle.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
+                                    (d.CheckinStatus != null && d.CheckinStatus.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
+                                    (d.Notes != null && d.Notes.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+                                ).ToList();
+                            }
+
+                            ViewBag.SearchTerm = searchTerm; // Pass searchTerm to the view for display
                             return View(data);
                         }
                     }
